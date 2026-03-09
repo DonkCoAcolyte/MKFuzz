@@ -1,0 +1,2 @@
+A gui attached to a docker container with a set up c++ fuzzing pipeline. I believe in industry terms this is a fuzzing orchestrator.
+I should note that the docker container contains not only the necessary c++ fuzzing tools (afl++, afl-utils, afl-cov-fast and dependancies), but also comes with c# tools preinstalled because during the initial brainstorm it was planned to implement such functionality aswell.
