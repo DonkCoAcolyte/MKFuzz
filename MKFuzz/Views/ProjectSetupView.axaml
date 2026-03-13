@@ -9,27 +9,41 @@
     <ScrollViewer>
         <StackPanel Margin="10" Spacing="10">
             <TextBox Watermark="Project Name" Text="{Binding Project.Name}"/>
+
+            <!-- Source Folder -->
             <WrapPanel>
                 <TextBlock VerticalAlignment="Center" Width="120">Source Folder:</TextBlock>
                 <TextBox Text="{Binding Project.SourcePath}" Width="300"/>
                 <Button Content="Browse" Command="{Binding BrowseSourceCommand}" Margin="5,0"/>
             </WrapPanel>
+            <TextBlock Text="{Binding MountSource, StringFormat='Mounted at: {0}'}" 
+                       FontSize="11" Foreground="Gray" Margin="20,0,0,0"/>
+
+            <!-- Harness File -->
             <WrapPanel>
                 <TextBlock VerticalAlignment="Center" Width="120">Harness File (optional):</TextBlock>
                 <TextBox Text="{Binding Project.HarnessPath}" Width="300"/>
                 <Button Content="Browse" Margin="5,0"/>
                 <Button Content="Edit" Command="{Binding EditHarnessCommand}" Margin="5,0"/>
             </WrapPanel>
+
+            <!-- Seeds Folder -->
             <WrapPanel>
                 <TextBlock VerticalAlignment="Center" Width="120">Seeds Folder:</TextBlock>
                 <TextBox Text="{Binding Project.SeedsPath}" Width="300"/>
                 <Button Content="Browse" Command="{Binding BrowseSeedsCommand}" Margin="5,0"/>
             </WrapPanel>
+            <TextBlock Text="{Binding MountSeeds, StringFormat='Mounted at: {0}'}" 
+                       FontSize="11" Foreground="Gray" Margin="20,0,0,0"/>
+
+            <!-- Output Folder -->
             <WrapPanel>
                 <TextBlock VerticalAlignment="Center" Width="120">Output Folder:</TextBlock>
                 <TextBox Text="{Binding Project.OutputPath}" Width="300"/>
                 <Button Content="Browse" Command="{Binding BrowseOutputCommand}" Margin="5,0"/>
             </WrapPanel>
+            <TextBlock Text="{Binding MountOutput, StringFormat='Mounted at: {0}'}" 
+                       FontSize="11" Foreground="Gray" Margin="20,0,0,0"/>
 
             <!-- Docker status panel -->
             <WrapPanel Margin="0,5">
@@ -39,10 +53,32 @@
             </WrapPanel>
 
             <Expander Header="Build and Target">
-                <StackPanel Margin="10" Spacing="5">
-                    <TextBox Watermark="Build command (e.g., make -j4)" Text="{Binding Project.BuildCommand}"/>
+                <StackPanel Margin="10" Spacing="10">
+                    <!-- Fuzz build command with static prefix/suffix from ViewModel -->
+                    <StackPanel>
+                        <TextBlock Text="Fuzz build command:" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding FuzzBuildPrefix}" VerticalAlignment="Center" FontFamily="Consolas"/>
+                            <TextBox Text="{Binding Project.FuzzBuildCommand}" Width="200" Margin="5,0"/>
+                            <TextBlock Text="{Binding FuzzBuildSuffix}" VerticalAlignment="Center" FontFamily="Consolas"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <!-- Coverage build command -->
+                    <StackPanel>
+                        <TextBlock Text="Coverage build command:" FontWeight="Bold" Margin="0,10,0,5"/>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding CoverageBuildPrefix}" VerticalAlignment="Center" FontFamily="Consolas"/>
+                            <TextBox Text="{Binding Project.CoverageBuildCommand}" Width="200" Margin="5,0"/>
+                            <TextBlock Text="{Binding CoverageBuildSuffix}" VerticalAlignment="Center" FontFamily="Consolas"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <!-- Binary paths -->
                     <TextBox Watermark="Fuzz binary path (in container)" Text="{Binding Project.FuzzBinaryPath}"/>
                     <TextBox Watermark="Coverage binary path (in container)" Text="{Binding Project.CovBinaryPath}"/>
+
+                    <!-- Target arguments -->
                     <TextBox Watermark="Target arguments (use @@ for input)" Text="{Binding Project.TargetArgs}"/>
                 </StackPanel>
             </Expander>

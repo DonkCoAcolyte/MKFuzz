@@ -29,10 +29,21 @@ public partial class ProjectSetupViewModel : ViewModelBase
     [ObservableProperty]
     private string _statusMessage = "";
 
-    // Forwarded Docker status from MainWindowViewModel
+    // Docker status forwarding
     public string DockerStatus => _mainVm.DockerStatus;
     public string DockerStatusColor => _mainVm.DockerStatusColor;
     public IAsyncRelayCommand CheckEnvironmentCommand => _mainVm.CheckEnvironmentCommand;
+
+    // Mount points (from central constants)
+    public string MountSource => ContainerPaths.SourceMount;
+    public string MountSeeds => ContainerPaths.SeedsMount;
+    public string MountOutput => ContainerPaths.OutputMount;
+
+    // Build command static parts
+    public string FuzzBuildPrefix => ContainerPaths.FuzzBuildPrefix;
+    public string FuzzBuildSuffix => ContainerPaths.FuzzBuildSuffix;
+    public string CoverageBuildPrefix => ContainerPaths.CoverageBuildPrefix;
+    public string CoverageBuildSuffix => ContainerPaths.CoverageBuildSuffix;
 
     public ProjectSetupViewModel(FuzzingProject project, DockerService docker, MainWindowViewModel mainVm)
     {
@@ -84,9 +95,9 @@ public partial class ProjectSetupViewModel : ViewModelBase
             StatusMessage = "Starting container...";
             var volumes = new Dictionary<string, string>
             {
-                { Project.SourcePath, "/workspace/src:ro" },
-                { Project.SeedsPath, "/workspace/seeds:ro" },
-                { Project.OutputPath, "/workspace/hostout:rw" }
+                { Project.SourcePath, $"{ContainerPaths.SourceMount}:ro" },
+                { Project.SeedsPath, $"{ContainerPaths.SeedsMount}:ro" },
+                { Project.OutputPath, $"{ContainerPaths.OutputMount}:rw" }
             };
             await _docker.StartContainerAsync("fuzzing-image:latest", volumes);
             StatusMessage = "Container started.";

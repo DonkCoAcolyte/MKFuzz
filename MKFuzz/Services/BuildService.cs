@@ -1,7 +1,7 @@
-﻿using MKFuzz.Models;
-using MKFuzz.Services;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using MKFuzz.Models;
+using MKFuzz.Services;  // for ContainerPaths
 
 namespace MKFuzz.Services;
 
@@ -17,8 +17,9 @@ public class BuildService
     public async Task<bool> BuildFuzzTargetAsync(FuzzingProject project, IProgress<string> progress)
     {
         progress.Report("Building fuzz target...");
-        var cmd = $"cd /workspace/src && {project.BuildCommand} CC=afl-clang-fast CXX=afl-clang-fast++";
-        var result = await _docker.ExecCommandAsync(cmd);
+        // Build command: prefix + user command + suffix
+        string fullCommand = $"{ContainerPaths.FuzzBuildPrefix}{project.FuzzBuildCommand}{ContainerPaths.FuzzBuildSuffix}";
+        var result = await _docker.ExecCommandAsync(fullCommand);
         if (result.ExitCode != 0)
         {
             progress.Report($"Build failed:\n{result.Stderr}");
@@ -32,8 +33,8 @@ public class BuildService
     {
         if (!project.GenerateCoverage) return true;
         progress.Report("Building coverage target...");
-        var cmd = $"cd /workspace/src && {project.BuildCommand} CFLAGS=\"--coverage -O0 -g\" CXXFLAGS=\"--coverage -O0 -g\" LDFLAGS=\"--coverage\"";
-        var result = await _docker.ExecCommandAsync(cmd);
+        string fullCommand = $"{ContainerPaths.CoverageBuildPrefix}{project.CoverageBuildCommand}{ContainerPaths.CoverageBuildSuffix}";
+        var result = await _docker.ExecCommandAsync(fullCommand);
         if (result.ExitCode != 0)
         {
             progress.Report($"Coverage build failed:\n{result.Stderr}");
