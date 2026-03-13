@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MKFuzz.ViewModels"
+             x:Class="MKFuzz.Views.ProjectSetupView"
+             x:DataType="vm:ProjectSetupViewModel">
+    <Design.DataContext>
+        <vm:ProjectSetupViewModel />
+    </Design.DataContext>
+    <ScrollViewer>
+        <StackPanel Margin="10" Spacing="10">
+            <TextBox Watermark="Project Name" Text="{Binding Project.Name}"/>
+            <WrapPanel>
+                <TextBlock VerticalAlignment="Center" Width="120">Source Folder:</TextBlock>
+                <TextBox Text="{Binding Project.SourcePath}" Width="300"/>
+                <Button Content="Browse" Command="{Binding BrowseSourceCommand}" Margin="5,0"/>
+            </WrapPanel>
+            <WrapPanel>
+                <TextBlock VerticalAlignment="Center" Width="120">Harness File (optional):</TextBlock>
+                <TextBox Text="{Binding Project.HarnessPath}" Width="300"/>
+                <Button Content="Browse" Margin="5,0"/>
+                <Button Content="Edit" Command="{Binding EditHarnessCommand}" Margin="5,0"/>
+            </WrapPanel>
+            <WrapPanel>
+                <TextBlock VerticalAlignment="Center" Width="120">Seeds Folder:</TextBlock>
+                <TextBox Text="{Binding Project.SeedsPath}" Width="300"/>
+                <Button Content="Browse" Command="{Binding BrowseSeedsCommand}" Margin="5,0"/>
+            </WrapPanel>
+            <WrapPanel>
+                <TextBlock VerticalAlignment="Center" Width="120">Output Folder:</TextBlock>
+                <TextBox Text="{Binding Project.OutputPath}" Width="300"/>
+                <Button Content="Browse" Command="{Binding BrowseOutputCommand}" Margin="5,0"/>
+            </WrapPanel>
+
+            <!-- Docker status panel -->
+            <WrapPanel Margin="0,5">
+                <TextBlock VerticalAlignment="Center" Text="Docker: " />
+                <TextBlock VerticalAlignment="Center" Text="{Binding DockerStatus}" Foreground="{Binding DockerStatusColor}" Margin="5,0"/>
+                <Button Content="Check Environment" Command="{Binding CheckEnvironmentCommand}" Margin="5,0"/>
+            </WrapPanel>
+
+            <Expander Header="Build and Target">
+                <StackPanel Margin="10" Spacing="5">
+                    <TextBox Watermark="Build command (e.g., make -j4)" Text="{Binding Project.BuildCommand}"/>
+                    <TextBox Watermark="Fuzz binary path (in container)" Text="{Binding Project.FuzzBinaryPath}"/>
+                    <TextBox Watermark="Coverage binary path (in container)" Text="{Binding Project.CovBinaryPath}"/>
+                    <TextBox Watermark="Target arguments (use @@ for input)" Text="{Binding Project.TargetArgs}"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="Fuzzing Settings">
+                <StackPanel Margin="10" Spacing="5">
+                    <WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Width="150">CPU Cores:</TextBlock>
+                        <NumericUpDown Value="{Binding Project.Cores}" Minimum="1" Maximum="64" Width="100"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Width="150">Stop condition:</TextBlock>
+                        <ComboBox ItemsSource="{Binding StopConditions}" SelectedItem="{Binding Project.StopWhen}" Width="150"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Width="150">Value (seconds/crashes):</TextBlock>
+                        <NumericUpDown Value="{Binding Project.StopValue}" Minimum="0" Width="100"/>
+                    </WrapPanel>
+                    <CheckBox IsChecked="{Binding Project.GenerateCoverage}">Generate coverage report</CheckBox>
+                    <CheckBox IsChecked="{Binding Project.KeepContainerAlive}">Keep container alive after fuzzing</CheckBox>
+                    <CheckBox IsChecked="{Binding Project.SanitizeFilenames}">Sanitize filenames (crossrename)</CheckBox>
+                </StackPanel>
+            </Expander>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Save Project" Command="{Binding SaveProjectCommand}" Margin="5"/>
+                <Button Content="Start Container" Command="{Binding StartContainerCommand}" Margin="5"/>
+            </StackPanel>
+            <TextBlock Text="{Binding StatusMessage}" Foreground="Blue"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

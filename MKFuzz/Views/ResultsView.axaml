@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MKFuzz.ViewModels"
+             x:Class="MKFuzz.Views.ResultsView"
+             x:DataType="vm:ResultsViewModel">
+    <Design.DataContext>
+        <vm:ResultsViewModel />
+    </Design.DataContext>
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="5">
+            <Button Content="Open Output Folder" Command="{Binding OpenOutputFolderCommand}"/>
+            <Button Content="Open Coverage Report" Command="{Binding OpenCoverageCommand}" IsEnabled="{Binding HasCoverage}"/>
+            <Button Content="Export Archive" Command="{Binding ExportArchiveCommand}"/>
+        </StackPanel>
+
+        <TreeView ItemsSource="{Binding Folders}" Margin="0,5">
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}"/>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusMessage}" Foreground="Blue" Margin="0,5"/>
+    </DockPanel>
+</UserControl>
