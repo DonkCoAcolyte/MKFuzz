@@ -15,35 +15,36 @@
                 <TextBlock VerticalAlignment="Center" Width="120">Source Folder:</TextBlock>
                 <TextBox Text="{Binding Project.SourcePath}" Width="300"/>
                 <Button Content="Browse" Command="{Binding BrowseSourceCommand}" Margin="5,0"/>
+                <TextBlock Text="{Binding MountSource, StringFormat='Mounted at: {0}'}" 
+                       VerticalAlignment="Center" Foreground="Gray"/>
             </WrapPanel>
-            <TextBlock Text="{Binding MountSource, StringFormat='Mounted at: {0}'}" 
-                       FontSize="11" Foreground="Gray" Margin="20,0,0,0"/>
 
-            <!-- Harness File -->
-<WrapPanel>
-    <TextBlock VerticalAlignment="Center" Width="120">Harness File (optional):</TextBlock>
-    <TextBox Text="{Binding Project.HarnessPath}" Width="300"/>
-    <Button Content="Browse" Command="{Binding BrowseHarnessCommand}" Margin="5,0"/>
-    <Button Content="Edit" Command="{Binding EditHarnessCommand}" Margin="5,0"/>
-</WrapPanel>
+	<!-- Harness File -->
+	<WrapPanel>
+		<TextBlock VerticalAlignment="Center" Width="120">Harness File:</TextBlock>
+		<TextBox Text="{Binding Project.HarnessPath}" Width="300"/>
+		<Button Content="Browse" Command="{Binding BrowseHarnessCommand}" Margin="5,0"/>
+		<Button Content="Edit" Command="{Binding EditHarnessCommand}" Margin="5,0"/>
+		<TextBlock VerticalAlignment="Center" Foreground="Gray">(Optional)</TextBlock>
+    </WrapPanel>
 
             <!-- Seeds Folder -->
             <WrapPanel>
                 <TextBlock VerticalAlignment="Center" Width="120">Seeds Folder:</TextBlock>
                 <TextBox Text="{Binding Project.SeedsPath}" Width="300"/>
                 <Button Content="Browse" Command="{Binding BrowseSeedsCommand}" Margin="5,0"/>
+                <TextBlock Text="{Binding MountSeeds, StringFormat='Mounted at: {0}'}" 
+                       VerticalAlignment="Center" Foreground="Gray"/>
             </WrapPanel>
-            <TextBlock Text="{Binding MountSeeds, StringFormat='Mounted at: {0}'}" 
-                       FontSize="11" Foreground="Gray" Margin="20,0,0,0"/>
 
             <!-- Output Folder -->
             <WrapPanel>
                 <TextBlock VerticalAlignment="Center" Width="120">Output Folder:</TextBlock>
                 <TextBox Text="{Binding Project.OutputPath}" Width="300"/>
                 <Button Content="Browse" Command="{Binding BrowseOutputCommand}" Margin="5,0"/>
+                <TextBlock Text="{Binding MountOutput, StringFormat='Mounted at: {0}'}" 
+                       VerticalAlignment="Center" Foreground="Gray"/>
             </WrapPanel>
-            <TextBlock Text="{Binding MountOutput, StringFormat='Mounted at: {0}'}" 
-                       FontSize="11" Foreground="Gray" Margin="20,0,0,0"/>
 
             <!-- Docker status panel -->
             <WrapPanel Margin="0,5">
@@ -86,16 +87,16 @@
             <Expander Header="Fuzzing Settings">
                 <StackPanel Margin="10" Spacing="5">
                     <WrapPanel>
-                        <TextBlock VerticalAlignment="Center" Width="150">CPU Cores:</TextBlock>
-                        <NumericUpDown Value="{Binding Project.Cores}" Minimum="1" Maximum="64" Width="100"/>
+                        <TextBlock VerticalAlignment="Center" Width="200">CPU Cores:</TextBlock>
+                        <NumericUpDown Value="{Binding Project.Cores}" Minimum="1" Maximum="64" Width="200"/>
                     </WrapPanel>
                     <WrapPanel>
-                        <TextBlock VerticalAlignment="Center" Width="150">Stop condition:</TextBlock>
-                        <ComboBox ItemsSource="{Binding StopConditions}" SelectedItem="{Binding Project.StopWhen}" Width="150"/>
+                        <TextBlock VerticalAlignment="Center" Width="200">Stop condition:</TextBlock>
+                        <ComboBox ItemsSource="{Binding StopConditions}" SelectedItem="{Binding Project.StopWhen}" Width="200"/>
                     </WrapPanel>
                     <WrapPanel>
-                        <TextBlock VerticalAlignment="Center" Width="150">Value (seconds/crashes):</TextBlock>
-                        <NumericUpDown Value="{Binding Project.StopValue}" Minimum="0" Width="100"/>
+                        <TextBlock VerticalAlignment="Center" Width="200">Value (seconds/crashes):</TextBlock>
+                        <NumericUpDown Value="{Binding Project.StopValue}" Minimum="0" Width="200"/>
                     </WrapPanel>
                     <CheckBox IsChecked="{Binding Project.GenerateCoverage}">Generate coverage report</CheckBox>
                     <CheckBox IsChecked="{Binding Project.KeepContainerAlive}">Keep container alive after fuzzing</CheckBox>
