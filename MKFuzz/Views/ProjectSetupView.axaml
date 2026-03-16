@@ -20,12 +20,12 @@
                        FontSize="11" Foreground="Gray" Margin="20,0,0,0"/>
 
             <!-- Harness File -->
-            <WrapPanel>
-                <TextBlock VerticalAlignment="Center" Width="120">Harness File (optional):</TextBlock>
-                <TextBox Text="{Binding Project.HarnessPath}" Width="300"/>
-                <Button Content="Browse" Margin="5,0"/>
-                <Button Content="Edit" Command="{Binding EditHarnessCommand}" Margin="5,0"/>
-            </WrapPanel>
+<WrapPanel>
+    <TextBlock VerticalAlignment="Center" Width="120">Harness File (optional):</TextBlock>
+    <TextBox Text="{Binding Project.HarnessPath}" Width="300"/>
+    <Button Content="Browse" Command="{Binding BrowseHarnessCommand}" Margin="5,0"/>
+    <Button Content="Edit" Command="{Binding EditHarnessCommand}" Margin="5,0"/>
+</WrapPanel>
 
             <!-- Seeds Folder -->
             <WrapPanel>

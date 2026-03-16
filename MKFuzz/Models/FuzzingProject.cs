@@ -1,4 +1,5 @@
 ﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MKFuzz.Models;
 
@@ -9,31 +10,62 @@ public enum StopCondition
     CrashCount
 }
 
-public class FuzzingProject
+public partial class FuzzingProject : ObservableObject
 {
-    public string Name { get; set; } = "New Project";
-    public string SourcePath { get; set; } = "";
-    public string HarnessPath { get; set; } = "";
-    public string SeedsPath { get; set; } = "";
-    public string OutputPath { get; set; } = "";
+    [ObservableProperty]
+    private string _name = "New Project";
 
-    // Separate build commands
-    public string FuzzBuildCommand { get; set; } = "make -j4";
-    public string CoverageBuildCommand { get; set; } = "make -j4";
+    [ObservableProperty]
+    private string _sourcePath = "";
 
-    public string FuzzBinaryPath { get; set; } = "";
-    public string CovBinaryPath { get; set; } = "";
-    public string TargetArgs { get; set; } = "@@ /dev/null";
+    [ObservableProperty]
+    private string _harnessPath = "";
 
-    public int Cores { get; set; } = Environment.ProcessorCount;
-    public StopCondition StopWhen { get; set; } = StopCondition.TimeBased;
-    public int StopValue { get; set; } = 3600;
+    [ObservableProperty]
+    private string _seedsPath = "";
 
-    public bool GenerateCoverage { get; set; } = true;
-    public bool KeepContainerAlive { get; set; } = false;
-    public bool SanitizeFilenames { get; set; } = true;
+    [ObservableProperty]
+    private string _outputPath = "";
 
-    public int MemoryLimit { get; set; } = 500;
-    public int TimeoutMs { get; set; } = 1000;
-    public string ExtraAflArgs { get; set; } = "";
+    [ObservableProperty]
+    private string _fuzzBuildCommand = "make -j4";
+
+    [ObservableProperty]
+    private string _coverageBuildCommand = "make -j4";
+
+    [ObservableProperty]
+    private string _fuzzBinaryPath = "";
+
+    [ObservableProperty]
+    private string _covBinaryPath = "";
+
+    [ObservableProperty]
+    private string _targetArgs = "@@ /dev/null";
+
+    [ObservableProperty]
+    private int _cores = Environment.ProcessorCount;
+
+    [ObservableProperty]
+    private StopCondition _stopWhen = StopCondition.TimeBased;
+
+    [ObservableProperty]
+    private int _stopValue = 3600;
+
+    [ObservableProperty]
+    private bool _generateCoverage = true;
+
+    [ObservableProperty]
+    private bool _keepContainerAlive = false;
+
+    [ObservableProperty]
+    private bool _sanitizeFilenames = true;
+
+    [ObservableProperty]
+    private int _memoryLimit = 500;
+
+    [ObservableProperty]
+    private int _timeoutMs = 1000;
+
+    [ObservableProperty]
+    private string _extraAflArgs = "";
 }

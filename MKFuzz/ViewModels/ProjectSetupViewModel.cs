@@ -14,15 +14,11 @@ public partial class ProjectSetupViewModel : ViewModelBase
 {
     private readonly DockerService _docker;
     private readonly MainWindowViewModel _mainVm;
+
+    [ObservableProperty]
     private FuzzingProject _project;
 
     public IStorageProvider? StorageProvider { get; set; }
-
-    public FuzzingProject Project
-    {
-        get => _project;
-        set => SetProperty(ref _project, value);
-    }
 
     public Array StopConditions => Enum.GetValues(typeof(StopCondition));
 
@@ -77,6 +73,19 @@ public partial class ProjectSetupViewModel : ViewModelBase
         var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "Select Output Folder" });
         if (folders.Count > 0)
             Project.OutputPath = folders[0].Path.LocalPath;
+    }
+
+    [RelayCommand]
+    private async Task BrowseHarness()
+    {
+        if (StorageProvider == null) return;
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select Harness File",
+            AllowMultiple = false
+        });
+        if (files.Count > 0)
+            Project.HarnessPath = files[0].Path.LocalPath;
     }
 
     [RelayCommand]
