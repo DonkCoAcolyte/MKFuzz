@@ -13,7 +13,10 @@ namespace MKFuzz.ViewModels;
 public partial class ProjectSetupViewModel : ViewModelBase
 {
     private readonly DockerService _docker;
+
     private readonly MainWindowViewModel _mainVm;
+
+    public MainWindowViewModel MainVm => _mainVm;
 
     [ObservableProperty]
     private FuzzingProject _project;
@@ -24,11 +27,6 @@ public partial class ProjectSetupViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _statusMessage = "";
-
-    // Docker status forwarding
-    public string DockerStatus => _mainVm.DockerStatus;
-    public string DockerStatusColor => _mainVm.DockerStatusColor;
-    public IAsyncRelayCommand CheckEnvironmentCommand => _mainVm.CheckEnvironmentCommand;
 
     // Mount points (from central constants)
     public string MountSource => ContainerPaths.SourceMount;

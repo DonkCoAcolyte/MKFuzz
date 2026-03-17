@@ -49,8 +49,8 @@
             <!-- Docker status panel -->
             <WrapPanel Margin="0,5">
                 <TextBlock VerticalAlignment="Center" Text="Docker: " />
-                <TextBlock VerticalAlignment="Center" Text="{Binding DockerStatus}" Foreground="{Binding DockerStatusColor}" Margin="5,0"/>
-                <Button Content="Check Environment" Command="{Binding CheckEnvironmentCommand}" Margin="5,0"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding MainVm.DockerStatus}" Foreground="{Binding MainVm.DockerStatusColor}" Margin="5,0"/>
+                <Button Content="Check Environment" Command="{Binding MainVm.CheckEnvironmentCommand}" Margin="5,0"/>
             </WrapPanel>
 
             <Expander Header="Build and Target">
