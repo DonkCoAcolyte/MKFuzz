@@ -40,7 +40,10 @@ public class DockerEnvironmentService
             Cmd = new[] { "cat", "/proc/sys/kernel/core_pattern" },
             AttachStdout = true,
             AttachStderr = true,
-            HostConfig = new HostConfig { AutoRemove = true }
+            HostConfig = new HostConfig
+            {
+                AutoRemove = false // important!
+            }
         };
 
         try
@@ -48,18 +51,34 @@ public class DockerEnvironmentService
             var container = await _client.Containers.CreateContainerAsync(containerConfig);
             await _client.Containers.StartContainerAsync(container.ID, null);
 
-            var logs = await _client.Containers.GetContainerLogsAsync(container.ID,
-                new ContainerLogsParameters { ShowStdout = true, ShowStderr = true });
-
-            string output = "";
-            using (var reader = new StreamReader(logs))
-                output = await reader.ReadToEndAsync();
-
+            // Wait for the container to finish
             var waitResponse = await _client.Containers.WaitContainerAsync(container.ID);
-            return output.Trim() == "core";
+            if (waitResponse.StatusCode != 0)
+            {
+                // Command failed – clean up and return false
+                await _client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters { Force = true });
+                return false;
+            }
+
+            // Now get logs – use the non‑obsolete overload with timestamps = false
+            var logs = await _client.Containers.GetContainerLogsAsync(
+                container.ID,
+                false,
+                parameters: new ContainerLogsParameters { ShowStdout = true, ShowStderr = true },
+                cancellationToken: default);
+
+            // Read the multiplexed stream to separate stdout/stderr strings
+            var (stdout, stderr) = await logs.ReadOutputToEndAsync(default);
+
+            // Clean up the container
+            await _client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters { Force = true });
+
+            return stdout.Trim() == "core";
         }
-        catch
+        catch (Exception ex)
         {
+            // Log if desired
+            Console.WriteLine($"Error in IsCorePatternSetCorrectlyAsync: {ex}");
             return false;
         }
     }
@@ -70,22 +89,48 @@ public class DockerEnvironmentService
         {
             Image = "alpine:latest",
             Cmd = new[] { "sh", "-c", "echo core > /proc/sys/kernel/core_pattern" },
+            AttachStdout = true,   // So we can capture output if needed
+            AttachStderr = true,   // Crucial to see error messages
             HostConfig = new HostConfig
             {
                 Privileged = true,
-                AutoRemove = true
+                AutoRemove = false   // Disable auto-remove so we can read logs after exit
             }
         };
 
         try
         {
+            // Create and start the container
             var container = await _client.Containers.CreateContainerAsync(containerConfig);
             await _client.Containers.StartContainerAsync(container.ID, null);
+
+            // Wait for the command to finish
             var waitResponse = await _client.Containers.WaitContainerAsync(container.ID);
-            return waitResponse.StatusCode == 0;
+
+            // Now fetch the logs (both stdout and stderr)
+            var logs = await _client.Containers.GetContainerLogsAsync(
+                container.ID,
+                false,
+                parameters: new ContainerLogsParameters { ShowStdout = true, ShowStderr = true },
+                cancellationToken: default);
+
+            var (stdout, stderr) = await logs.ReadOutputToEndAsync(default);
+
+            // Clean up the container (we are done with it)
+            await _client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters { Force = true });
+
+            // If exit code is non‑zero, log the error and return false
+            if (waitResponse.StatusCode != 0)
+            {
+                Console.WriteLine($"SetCorePatternAsync failed with exit code {waitResponse.StatusCode}. stderr: {stderr}");
+                return false;
+            }
+
+            return true;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"Exception in SetCorePatternAsync: {ex}");
             return false;
         }
     }
