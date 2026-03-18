@@ -8,9 +8,9 @@ public static class ContainerPaths
     public const string OutputMount = "/workspace/hostout";
 
     // Build command templates
-    public const string FuzzBuildPrefix = "cd " + SourceMount + " && ";
-    public const string FuzzBuildSuffix = " CC=afl-clang-fast CXX=afl-clang-fast++";
+    public const string FuzzBuildPrefix = "cd " + SourceMount + " &&  CC=afl-clang-fast CXX=afl-clang-fast++ ";
+    public const string FuzzBuildSuffix = "";
 
-    public const string CoverageBuildPrefix = "cd " + SourceMount + " && ";
-    public const string CoverageBuildSuffix = " CFLAGS=\"--coverage -O0 -g\" CXXFLAGS=\"--coverage -O0 -g\" LDFLAGS=\"--coverage\"";
+    public const string CoverageBuildPrefix = "cd " + SourceMount + " && CC=afl-clang-fast CXX=afl-clang-fast++ CFLAGS=\"--coverage -O0 -g\" CXXFLAGS=\"--coverage -O0 -g\" LDFLAGS=\"--coverage\" && ";
+    public const string CoverageBuildSuffix = "";
 }
