@@ -13,6 +13,7 @@ public partial class MainWindow : Window
         {
             if (DataContext is MainWindowViewModel vm)
             {
+                vm.StorageProvider = this.StorageProvider;
                 if (vm.Tabs[0] is ProjectSetupViewModel setupVm)
                 {
                     setupVm.StorageProvider = this.StorageProvider;

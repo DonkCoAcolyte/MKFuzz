@@ -86,14 +86,6 @@ public partial class ProjectSetupViewModel : ViewModelBase
             Project.HarnessPath = files[0].Path.LocalPath;
     }
 
-    [RelayCommand]
-    private void SaveProject()
-    {
-        var json = System.Text.Json.JsonSerializer.Serialize(Project);
-        File.WriteAllText(Path.Combine(Project.OutputPath, $"{Project.Name}.fuzzproj"), json);
-        StatusMessage = "Project saved.";
-    }
-
     [RelayCommand(CanExecute = nameof(CanStartContainer))]
     private async Task StartContainer()
     {

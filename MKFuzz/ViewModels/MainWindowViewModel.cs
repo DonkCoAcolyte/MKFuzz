@@ -1,11 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MKFuzz.Models;
 using MKFuzz.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace MKFuzz.ViewModels;
@@ -15,6 +17,7 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
     private readonly DockerService _docker;
     private readonly DockerEnvironmentService _envService;
     private FuzzingProject _currentProject;
+    private ProjectSetupViewModel _projectSetupVm;
 
     public ObservableCollection<ViewModelBase> Tabs { get; } = new();
 
@@ -24,7 +27,7 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
     [ObservableProperty]
     private string _dockerStatusColor = "Gray";
 
-    public IAsyncRelayCommand CheckEnvironmentCommand { get; }
+    public IStorageProvider? StorageProvider { get; set; }
 
     public MainWindowViewModel()
     {
@@ -32,15 +35,17 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
         _docker = new DockerService();
         _envService = new DockerEnvironmentService();
 
-        Tabs.Add(new ProjectSetupViewModel(_currentProject, _docker, this));
+        var projectSetupVm = new ProjectSetupViewModel(_currentProject, _docker, this);
+        _projectSetupVm = projectSetupVm;
+        Tabs.Add(projectSetupVm);
         Tabs.Add(new FuzzingViewModel(_currentProject, _docker));
         Tabs.Add(new ResultsViewModel(_currentProject, _docker, this));
 
-        CheckEnvironmentCommand = new AsyncRelayCommand(CheckEnvironmentAsync);
-        // Optionally run check on startup
         Task.Run(async () => await CheckEnvironmentAsync());
     }
 
+    // --- Docker environment check (unchanged) ---
+    [RelayCommand]
     private async Task CheckEnvironmentAsync()
     {
         DockerStatus = "Checking Docker...";
@@ -72,6 +77,55 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
                 DockerStatus = "Failed to set core_pattern – manual intervention may be needed";
                 DockerStatusColor = "Red";
             }
+        }
+    }
+
+    // --- File menu commands (correctly implemented) ---
+    [RelayCommand]
+    private void NewProject()
+    {
+        var newProj = new FuzzingProject();
+        _currentProject = newProj;
+        _projectSetupVm.Project = newProj;
+    }
+
+    [RelayCommand]
+    private async Task OpenProject()
+    {
+        if (StorageProvider == null) return;
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open Fuzzing Project",
+            AllowMultiple = false,
+            FileTypeFilter = new[] { new FilePickerFileType("Fuzzing Project") { Patterns = new[] { "*.fuzzproj" } } }
+        });
+        if (files.Count > 0)
+        {
+            var path = files[0].Path.LocalPath;
+            var json = await File.ReadAllTextAsync(path);
+            var proj = System.Text.Json.JsonSerializer.Deserialize<FuzzingProject>(json);
+            if (proj != null)
+            {
+                _currentProject = proj;
+                _projectSetupVm.Project = proj;
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveProject()
+    {
+        if (StorageProvider == null) return;
+        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save Fuzzing Project",
+            DefaultExtension = "fuzzproj",
+            FileTypeChoices = new[] { new FilePickerFileType("Fuzzing Project") { Patterns = new[] { "*.fuzzproj" } } }
+        });
+        if (file != null)
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(_currentProject);
+            await File.WriteAllTextAsync(file.Path.LocalPath, json);
         }
     }
 

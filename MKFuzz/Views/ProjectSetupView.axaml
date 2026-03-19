@@ -105,7 +105,7 @@
             </Expander>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Save Project" Command="{Binding SaveProjectCommand}" Margin="5"/>
+                <Button Content="Save Project" Command="{Binding MainVm.SaveProjectCommand}" Margin="5"/>
                 <Button Content="Start Container" Command="{Binding StartContainerCommand}" Margin="5"/>
             </StackPanel>
             <TextBlock Text="{Binding StatusMessage}" Foreground="Blue"/>
