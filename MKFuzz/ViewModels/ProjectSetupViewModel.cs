@@ -41,9 +41,28 @@ public partial class ProjectSetupViewModel : ViewModelBase
 
     public ProjectSetupViewModel(FuzzingProject project, DockerService docker, MainWindowViewModel mainVm)
     {
-        _project = project;
+        Project = project;
         _docker = docker;
         _mainVm = mainVm;
+    }
+
+    // Handle project changes: detach from old, attach to new
+    partial void OnProjectChanged(FuzzingProject? oldValue, FuzzingProject newValue)
+    {
+        if (oldValue != null)
+            oldValue.PropertyChanged -= OnProjectPropertyChanged;
+        if (newValue != null)
+        {
+            newValue.PropertyChanged += OnProjectPropertyChanged;
+            // Force re‑evaluation because the new project may already have a non‑empty SourcePath
+            StartContainerCommand.NotifyCanExecuteChanged();
+        }
+    }
+
+    private void OnProjectPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(FuzzingProject.SourcePath))
+            StartContainerCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand]

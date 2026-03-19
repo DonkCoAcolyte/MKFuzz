@@ -23,12 +23,6 @@ public class DockerService : IAsyncDisposable
 
     public async Task StartContainerAsync(string imageName, Dictionary<string, string> volumeMounts)
     {
-        // Ensure image exists
-        await _client.Images.CreateImageAsync(
-            new ImagesCreateParameters { FromImage = imageName },
-            null,
-            new Progress<JSONMessage>());
-
         var binds = volumeMounts.Select(kv => $"{kv.Key}:{kv.Value}").ToList();
 
         var hostConfig = new HostConfig
