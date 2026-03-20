@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -10,25 +9,11 @@ using MKFuzz.Services;
 
 namespace MKFuzz.ViewModels;
 
-public partial class FileNode : ObservableObject
-{
-    [ObservableProperty]
-    private string _name = "";
-
-    [ObservableProperty]
-    private string _fullPath = "";
-
-    public ObservableCollection<FileNode> Children { get; } = new();
-}
-
 public partial class ResultsViewModel : ViewModelBase
 {
-    private readonly FuzzingProject _project;
+    private readonly FuzzingProject _project; // keep reference
     private readonly DockerService _docker;
     private readonly MainWindowViewModel _mainVm;
-
-    [ObservableProperty]
-    private ObservableCollection<FileNode> _folders = new();
 
     [ObservableProperty]
     private bool _hasCoverage;
@@ -42,24 +27,24 @@ public partial class ResultsViewModel : ViewModelBase
         _docker = docker;
         _mainVm = mainVm;
 
-        LoadFolders();
+        // Watch for OutputPath changes to update HasCoverage
+        _project.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(FuzzingProject.OutputPath))
+                CheckForCoverage();
+        };
+        CheckForCoverage();
     }
 
-    private void LoadFolders()
+    private void CheckForCoverage()
     {
-        if (string.IsNullOrEmpty(_project.OutputPath) || !Directory.Exists(_project.OutputPath))
-            return;
-
-        var root = new FileNode { Name = "Output", FullPath = _project.OutputPath };
-        foreach (var dir in Directory.GetDirectories(_project.OutputPath))
+        if (string.IsNullOrEmpty(_project.OutputPath))
         {
-            var node = new FileNode { Name = Path.GetFileName(dir), FullPath = dir };
-            if (Path.GetFileName(dir) == "coverage_report")
-                HasCoverage = true;
-            root.Children.Add(node);
+            HasCoverage = false;
+            return;
         }
-        Folders.Clear();
-        Folders.Add(root);
+        var coveragePath = Path.Combine(_project.OutputPath, "coverage_report", "index.html");
+        HasCoverage = File.Exists(coveragePath);
     }
 
     [RelayCommand]
@@ -92,4 +77,7 @@ public partial class ResultsViewModel : ViewModelBase
         await _docker.StopContainerAsync();
         StatusMessage = "Container stopped.";
     }
+
+    // No UpdateProject needed because the Results tab only uses the project's properties;
+    // the reference is fixed, and we react to property changes via the subscription.
 }

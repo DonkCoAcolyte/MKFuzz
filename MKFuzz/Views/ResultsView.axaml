@@ -13,14 +13,6 @@
             <Button Content="Export Archive" Command="{Binding ExportArchiveCommand}"/>
         </StackPanel>
 
-        <TreeView ItemsSource="{Binding Folders}" Margin="0,5">
-            <TreeView.ItemTemplate>
-                <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding Name}"/>
-                </TreeDataTemplate>
-            </TreeView.ItemTemplate>
-        </TreeView>
-
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusMessage}" Foreground="Blue" Margin="0,5"/>
     </DockPanel>
 </UserControl>
