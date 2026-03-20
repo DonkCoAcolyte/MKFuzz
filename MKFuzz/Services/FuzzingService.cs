@@ -121,7 +121,7 @@ public class FuzzingService
             }
             else if (line.Contains("Cumulative speed"))
             {
-                TryParseInt(line, out int val);
+                TryParseDouble(line, out double val);
                 stats.ExecsPerSecond = val;
             }
             else if (line.Contains("Crashes saved"))
