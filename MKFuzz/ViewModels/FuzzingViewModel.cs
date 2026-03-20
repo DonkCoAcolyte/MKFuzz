@@ -14,7 +14,9 @@ public partial class FuzzingViewModel : ViewModelBase
     private readonly BuildService _build;
     private readonly FuzzingService _fuzzing;
     private readonly PostProcessService _postProcess;
-    private readonly FuzzingProject _project;
+
+    [ObservableProperty]
+    private FuzzingProject _project;
 
     [ObservableProperty]
     private string _statusMessage = "";
@@ -37,7 +39,7 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task BuildFuzz()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var success = await _build.BuildFuzzTargetAsync(_project, progress);
+        var success = await _build.BuildFuzzTargetAsync(Project, progress);
         StatusMessage = success ? "Fuzz build done." : "Fuzz build failed.";
     }
 
@@ -45,7 +47,7 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task BuildCoverage()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var success = await _build.BuildCoverageTargetAsync(_project, progress);
+        var success = await _build.BuildCoverageTargetAsync(Project, progress);
         StatusMessage = success ? "Coverage build done." : "Coverage build failed.";
     }
 
@@ -54,7 +56,7 @@ public partial class FuzzingViewModel : ViewModelBase
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
         var statsProgress = new Progress<FuzzingStats>(stats => Stats = stats);
-        await _fuzzing.StartFuzzingAsync(_project, progress, statsProgress);
+        await _fuzzing.StartFuzzingAsync(Project, progress, statsProgress);
         StatusMessage = "Fuzzing started.";
     }
 
@@ -63,7 +65,7 @@ public partial class FuzzingViewModel : ViewModelBase
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
         var statsProgress = new Progress<FuzzingStats>(stats => Stats = stats);
-        await _fuzzing.ResumeFuzzingAsync(_project, progress, statsProgress);
+        await _fuzzing.ResumeFuzzingAsync(Project, progress, statsProgress);
         StatusMessage = "Resuming fuzzing...";
     }
 
@@ -78,7 +80,7 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task Analyze()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var success = await _postProcess.ProcessAsync(_project, progress);
+        var success = await _postProcess.ProcessAsync(Project, progress);
         StatusMessage = success ? "Analysis complete." : "Analysis failed.";
     }
 }

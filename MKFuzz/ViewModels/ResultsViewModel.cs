@@ -11,9 +11,11 @@ namespace MKFuzz.ViewModels;
 
 public partial class ResultsViewModel : ViewModelBase
 {
-    private readonly FuzzingProject _project; // keep reference
     private readonly DockerService _docker;
     private readonly MainWindowViewModel _mainVm;
+
+    [ObservableProperty]
+    private FuzzingProject _project;
 
     [ObservableProperty]
     private bool _hasCoverage;
@@ -23,41 +25,61 @@ public partial class ResultsViewModel : ViewModelBase
 
     public ResultsViewModel(FuzzingProject project, DockerService docker, MainWindowViewModel mainVm)
     {
-        _project = project;
         _docker = docker;
         _mainVm = mainVm;
-
-        // Watch for OutputPath changes to update HasCoverage
-        _project.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(FuzzingProject.OutputPath))
-                CheckForCoverage();
-        };
+        // Use the property setter to trigger OnProjectChanged automatically
+        Project = project;
+        // CheckForCoverage will be called inside OnProjectChanged, but we call it once here too for safety
         CheckForCoverage();
+    }
+
+    partial void OnProjectChanged(FuzzingProject? oldValue, FuzzingProject newValue)
+    {
+        if (oldValue != null)
+            oldValue.PropertyChanged -= Project_PropertyChanged;
+        if (newValue != null)
+            newValue.PropertyChanged += Project_PropertyChanged;
+
+        // Refresh coverage status whenever the project instance changes
+        CheckForCoverage();
+    }
+
+    private void Project_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(FuzzingProject.OutputPath) ||
+            e.PropertyName == nameof(FuzzingProject.GenerateCoverage))
+            CheckForCoverage();
     }
 
     private void CheckForCoverage()
     {
-        if (string.IsNullOrEmpty(_project.OutputPath))
+        if (!Project.GenerateCoverage)
         {
             HasCoverage = false;
             return;
         }
-        var coveragePath = Path.Combine(_project.OutputPath, "coverage_report", "index.html");
-        HasCoverage = File.Exists(coveragePath);
+
+        if (string.IsNullOrEmpty(Project.OutputPath))
+        {
+            HasCoverage = false;
+            return;
+        }
+
+        var indexPath = Path.Combine(Project.OutputPath, "coverage_report", "index.html");
+        HasCoverage = File.Exists(indexPath);
     }
 
     [RelayCommand]
     private void OpenOutputFolder()
     {
-        if (Directory.Exists(_project.OutputPath))
-            Process.Start(new ProcessStartInfo(_project.OutputPath) { UseShellExecute = true });
+        if (Directory.Exists(Project.OutputPath))
+            Process.Start(new ProcessStartInfo(Project.OutputPath) { UseShellExecute = true });
     }
 
     [RelayCommand]
     private void OpenCoverage()
     {
-        var indexPath = Path.Combine(_project.OutputPath, "coverage_report", "index.html");
+        var indexPath = Path.Combine(Project.OutputPath, "coverage_report", "index.html");
         if (File.Exists(indexPath))
             Process.Start(new ProcessStartInfo(indexPath) { UseShellExecute = true });
     }
@@ -65,9 +87,9 @@ public partial class ResultsViewModel : ViewModelBase
     [RelayCommand]
     private async Task ExportArchive()
     {
-        var zipPath = Path.Combine(_project.OutputPath, $"{_project.Name}_results.zip");
+        var zipPath = Path.Combine(Project.OutputPath, $"{Project.Name}_results.zip");
         if (File.Exists(zipPath)) File.Delete(zipPath);
-        System.IO.Compression.ZipFile.CreateFromDirectory(_project.OutputPath, zipPath);
+        System.IO.Compression.ZipFile.CreateFromDirectory(Project.OutputPath, zipPath);
         StatusMessage = $"Archive created: {zipPath}";
     }
 
@@ -77,7 +99,4 @@ public partial class ResultsViewModel : ViewModelBase
         await _docker.StopContainerAsync();
         StatusMessage = "Container stopped.";
     }
-
-    // No UpdateProject needed because the Results tab only uses the project's properties;
-    // the reference is fixed, and we react to property changes via the subscription.
 }

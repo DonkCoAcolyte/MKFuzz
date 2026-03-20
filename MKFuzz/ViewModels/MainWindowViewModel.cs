@@ -18,6 +18,8 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
     private readonly DockerEnvironmentService _envService;
     private FuzzingProject _currentProject;
     private ProjectSetupViewModel _projectSetupVm;
+    private FuzzingViewModel _fuzzingVm;
+    private ResultsViewModel _resultsVm;
 
     public ObservableCollection<ViewModelBase> Tabs { get; } = new();
 
@@ -38,8 +40,14 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
         var projectSetupVm = new ProjectSetupViewModel(_currentProject, _docker, this);
         _projectSetupVm = projectSetupVm;
         Tabs.Add(projectSetupVm);
-        Tabs.Add(new FuzzingViewModel(_currentProject, _docker));
-        Tabs.Add(new ResultsViewModel(_currentProject, _docker, this));
+
+        var fuzzingVm = new FuzzingViewModel(_currentProject, _docker);
+        _fuzzingVm = fuzzingVm;
+        Tabs.Add(fuzzingVm);
+
+        var resultsVm = new ResultsViewModel(_currentProject, _docker, this);
+        _resultsVm = resultsVm;
+        Tabs.Add(resultsVm);
 
         Task.Run(async () => await CheckEnvironmentAsync());
     }
@@ -87,6 +95,8 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
         var newProj = new FuzzingProject();
         _currentProject = newProj;
         _projectSetupVm.Project = newProj;
+        _fuzzingVm.Project = newProj;
+        _resultsVm.Project = newProj;
     }
 
     [RelayCommand]
@@ -108,6 +118,8 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
             {
                 _currentProject = proj;
                 _projectSetupVm.Project = proj;
+                _fuzzingVm.Project = proj;
+                _resultsVm.Project = proj;
             }
         }
     }
