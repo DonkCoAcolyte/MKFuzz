@@ -7,5 +7,5 @@ public class FuzzingStats
     public int Crashes { get; set; }
     public double Coverage { get; set; }
     public int PendingItems { get; set; }
-    public long ExecsPerSecond { get; set; }
+    public double ExecsPerSecond { get; set; }
 }
