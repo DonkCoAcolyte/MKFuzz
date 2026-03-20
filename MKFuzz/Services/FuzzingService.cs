@@ -27,9 +27,9 @@ public class FuzzingService
             cmdline = project.TargetArgs,
             input = "/workspace/seeds",
             output = "/workspace/sync",
-            memory = project.MemoryLimit,
-            timeout = project.TimeoutMs,
-            cores = project.Cores
+            memory = project.MemoryLimit.ToString(),
+            timeout = project.TimeoutMs.ToString(),
+            cores = project.Cores.ToString()
         };
         var configJson = JsonSerializer.Serialize(config);
         await _docker.ExecCommandAsync($"echo '{configJson}' > /workspace/fuzz.json");
@@ -69,9 +69,9 @@ public class FuzzingService
             cmdline = project.TargetArgs,
             input = "/workspace/seeds",
             output = "/workspace/sync",
-            memory = project.MemoryLimit,
-            timeout = project.TimeoutMs,
-            cores = project.Cores
+            memory = project.MemoryLimit.ToString(),
+            timeout = project.TimeoutMs.ToString(),
+            cores = project.Cores.ToString()
         };
         var configJson = JsonSerializer.Serialize(config);
         await _docker.ExecCommandAsync($"echo '{configJson}' > /workspace/fuzz.json");
