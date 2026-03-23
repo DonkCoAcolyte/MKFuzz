@@ -16,13 +16,13 @@ public partial class FuzzingViewModel : ViewModelBase
     private readonly PostProcessService _postProcess;
 
     [ObservableProperty]
+    private string _rawStats = "";
+
+    [ObservableProperty]
     private FuzzingProject _project;
 
     [ObservableProperty]
     private string _statusMessage = "";
-
-    [ObservableProperty]
-    private FuzzingStats _stats = new();
 
     public ObservableCollection<string> LogEntries { get; } = new();
 
@@ -55,8 +55,8 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task StartFuzzing()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var statsProgress = new Progress<FuzzingStats>(stats => Stats = stats);
-        await _fuzzing.StartFuzzingAsync(Project, progress, statsProgress);
+        var rawStats = new Progress<string>(raw => RawStats = raw);  // replaces previous content each time
+        await _fuzzing.StartFuzzingAsync(Project, progress, rawStats);
         StatusMessage = "Fuzzing started.";
     }
 
@@ -64,8 +64,8 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task ResumeFuzzing()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var statsProgress = new Progress<FuzzingStats>(stats => Stats = stats);
-        await _fuzzing.ResumeFuzzingAsync(Project, progress, statsProgress);
+        var rawStats = new Progress<string>(raw => RawStats = raw);  // replaces previous content each time
+        await _fuzzing.ResumeFuzzingAsync(Project, progress, rawStats);
         StatusMessage = "Resuming fuzzing...";
     }
 

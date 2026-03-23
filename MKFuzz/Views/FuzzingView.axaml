@@ -16,39 +16,9 @@
             <Button Content="Analyze Results" Command="{Binding AnalyzeCommand}"/>
         </StackPanel>
 
-        <Grid RowDefinitions="Auto,*,Auto" DockPanel.Dock="Bottom">
-            <!-- Stats -->
-            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Margin="0,5">
-                <StackPanel Orientation="Horizontal" Spacing="20" Margin="10">
-                    <StackPanel>
-                        <TextBlock Text="Fuzzers alive" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Stats.FuzzersAlive}"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="Total execs" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Stats.TotalExecs}"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="Execs/sec" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Stats.ExecsPerSecond}"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="Crashes" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Stats.Crashes}"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="Coverage" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Stats.Coverage, StringFormat={}{0:F2}%}"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="Pending items" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Stats.PendingItems}"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
+        <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,*" DockPanel.Dock="Bottom">
             <!-- Log area -->
-            <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Margin="0,5">
+            <Border Grid.Row="0"  Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Margin="0,5">
                 <ScrollViewer>
                     <ItemsControl ItemsSource="{Binding LogEntries}">
                         <ItemsControl.ItemTemplate>
@@ -59,9 +29,15 @@
                     </ItemsControl>
                 </ScrollViewer>
             </Border>
+            <Border Grid.Column="1"  BorderBrush="Gray" BorderThickness="1" Margin="0,5">
+                <ScrollViewer>
+                    <TextBlock Text="{Binding RawStats}" FontFamily="Consolas" FontSize="11"
+                    TextWrapping="Wrap" Background="#F8F8F8" Padding="5"/>
+                </ScrollViewer>
+            </Border>
 
             <!-- Status message -->
-            <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" Foreground="Blue" Margin="0,5"/>
+            <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" Foreground="Blue" Margin="0,5"/>
         </Grid>
     </DockPanel>
 </UserControl>
