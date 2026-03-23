@@ -29,7 +29,6 @@ public class FuzzingService
             output = "/workspace/sync",
             memory = project.MemoryLimit.ToString(),
             timeout = project.TimeoutMs.ToString(),
-            cores = project.Cores.ToString()
         };
         var configJson = JsonSerializer.Serialize(config);
         await _docker.ExecCommandAsync($"echo '{configJson}' > /workspace/fuzz.json");
