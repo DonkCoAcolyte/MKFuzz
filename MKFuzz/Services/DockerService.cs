@@ -29,7 +29,7 @@ public class DockerService : IAsyncDisposable
         {
             Binds = binds,
             // Privileged = false (removed)
-            Tmpfs = new Dictionary<string, string> { { "/ramdisk", "size=2G" } }
+            Tmpfs = new Dictionary<string, string> { { "/tmp", "size=2G" } }
         };
 
         var createParams = new CreateContainerParameters
@@ -39,7 +39,6 @@ public class DockerService : IAsyncDisposable
             Tty = true,
             OpenStdin = true,
             StdinOnce = false,
-            Env = new List<string> { "AFL_TMPDIR=/ramdisk" },
             Cmd = new List<string> { "/bin/bash", "-c", "sleep infinity" }
         };
 
