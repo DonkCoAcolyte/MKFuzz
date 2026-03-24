@@ -8,7 +8,7 @@ namespace MKFuzz.Services;
 
 public class FuzzingService
 {
-    private const int AFL_FUZZER_STATS_UPDATE_INTERVAL = 60*1000;
+    private const int AFL_FUZZER_STATS_UPDATE_INTERVAL = 60 * 1000;
 
     private readonly DockerService _docker;
     private CancellationTokenSource? _cts;
@@ -39,18 +39,25 @@ public class FuzzingService
         _cts = new CancellationTokenSource();
         _monitorTask = Task.Run(async () =>
         {
-            while (!_cts.Token.IsCancellationRequested)
+            try
             {
-                await Task.Delay(AFL_FUZZER_STATS_UPDATE_INTERVAL);
-                var result = await _docker.ExecCommandAsync("afl-whatsup -s /workspace/sync");
-                if (result.ExitCode == 0)
+                while (true)
                 {
-                    rawStats.Report(result.Stdout);
+                    await Task.Delay(AFL_FUZZER_STATS_UPDATE_INTERVAL, _cts.Token);
+                    var result = await _docker.ExecCommandAsync("afl-whatsup -s /workspace/sync");
+                    if (result.ExitCode == 0)
+                    {
+                        rawStats.Report(result.Stdout);
+                    }
+                    else
+                    {
+                        progress.Report($"afl-whatsup error: {result.Stderr}");
+                    }
                 }
-                else
-                {
-                    progress.Report($"afl-whatsup error: {result.Stderr}");
-                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when cancellation is requested – exit cleanly
             }
         });
     }
@@ -83,18 +90,25 @@ public class FuzzingService
         _cts = new CancellationTokenSource();
         _monitorTask = Task.Run(async () =>
         {
-            while (!_cts.Token.IsCancellationRequested)
+            try
             {
-                await Task.Delay(AFL_FUZZER_STATS_UPDATE_INTERVAL);
-                var result = await _docker.ExecCommandAsync("afl-whatsup -s /workspace/sync");
-                if (result.ExitCode == 0)
+                while (true)
                 {
-                    rawStats.Report(result.Stdout);
+                    await Task.Delay(AFL_FUZZER_STATS_UPDATE_INTERVAL, _cts.Token);
+                    var result = await _docker.ExecCommandAsync("afl-whatsup -s /workspace/sync");
+                    if (result.ExitCode == 0)
+                    {
+                        rawStats.Report(result.Stdout);
+                    }
+                    else
+                    {
+                        progress.Report($"afl-whatsup error: {result.Stderr}");
+                    }
                 }
-                else
-                {
-                    progress.Report($"afl-whatsup error: {result.Stderr}");
-                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when cancellation is requested – exit cleanly
             }
         });
     }
@@ -105,5 +119,7 @@ public class FuzzingService
         await _docker.ExecCommandAsync("afl-multikill");
         if (_monitorTask != null)
             await _monitorTask;
+        _monitorTask = null;
+        _cts = null;
     }
 }
