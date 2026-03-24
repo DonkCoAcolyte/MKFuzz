@@ -29,7 +29,7 @@ public partial class ProjectSetupViewModel : ViewModelBase
     private string _statusMessage = "";
 
     // Mount points (from central constants)
-    public string MountSource => ContainerPaths.SourceMount;
+    public string SourceFolder => ContainerPaths.SourceFolder;
     public string MountSeeds => ContainerPaths.SeedsMount;
     public string MountOutput => ContainerPaths.OutputMount;
 

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Docker.DotNet;
+using Docker.DotNet.Models;
+using MKFuzz.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Docker.DotNet;
-using Docker.DotNet.Models;
 
 namespace MKFuzz.Services;
 
@@ -45,6 +46,9 @@ public class DockerService : IAsyncDisposable
         var response = await _client.Containers.CreateContainerAsync(createParams);
         _containerId = response.ID;
         await _client.Containers.StartContainerAsync(_containerId, null);
+        // Create the writable source directory and copy the read-only source into it
+        await ExecCommandAsync($"mkdir -p {ContainerPaths.SourceFolder}");
+        await ExecCommandAsync($"cp -r {ContainerPaths.SourceMount}/. {ContainerPaths.SourceFolder}");
     }
 
     public async Task<(int ExitCode, string Stdout, string Stderr)> ExecCommandAsync(string command)

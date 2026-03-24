@@ -15,7 +15,7 @@
                 <TextBlock VerticalAlignment="Center" Width="120">Source Folder:</TextBlock>
                 <TextBox Text="{Binding Project.SourcePath}" Width="300"/>
                 <Button Content="Browse" Command="{Binding BrowseSourceCommand}" Margin="5,0"/>
-                <TextBlock Text="{Binding MountSource, StringFormat='Mounted at: {0}'}" 
+                <TextBlock Text="{Binding SourceFolder, StringFormat='copied to: {0}'}" 
                        VerticalAlignment="Center" Foreground="Gray"/>
             </WrapPanel>
 
