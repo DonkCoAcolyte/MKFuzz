@@ -39,16 +39,26 @@ public class PostProcessService
         if (project.GenerateCoverage)
         {
             progress.Report("Generating coverage report...");
-            var covCmd = $"/opt/afl-cov-fast/afl-cov-fast.py -m gcc --code-dir /workspace/src --afl-fuzzing-dir /workspace/clean_corpus.cmin --coverage-cmd '{project.CovBinaryPath} {project.TargetArgs}' -j {project.Cores}";
-            result = await _docker.ExecCommandAsync(covCmd);
-            if (result.ExitCode != 0)
+
+            // Create a faux AFL sync directory for afl-cov-fast using SESSION000
+            await _docker.ExecCommandAsync("mkdir -p /workspace/cov_corpus/SESSION000/queue");
+            await _docker.ExecCommandAsync("cp -r /workspace/clean_corpus.cmin/* /workspace/cov_corpus/SESSION000/queue/");
+
+            // Run afl-cov-fast on the structured corpus
+            var covCmd = $"/opt/afl-cov-fast/afl-cov-fast.py -m gcc --code-dir /workspace/src --afl-fuzzing-dir /workspace/cov_corpus --coverage-cmd '{project.CovBinaryPath} {project.TargetArgs}' -j{project.Cores}";
+            var covResult = await _docker.ExecCommandAsync(covCmd);
+            if (covResult.ExitCode != 0)
             {
-                progress.Report($"afl-cov-fast failed:\n{result.Stderr}");
+                progress.Report($"afl-cov-fast failed:\n{covResult.Stderr}");
                 return false;
             }
 
-            await _docker.ExecCommandAsync("cp -r /workspace/clean_corpus.cmin/cov/web /workspace/hostout/coverage_report");
+            // Copy the generated report to the host output
+            await _docker.ExecCommandAsync("cp -r /workspace/cov_corpus/cov/web /workspace/hostout/coverage_report");
             progress.Report("Coverage report saved to hostout/coverage_report");
+
+            // Clean up temporary directory
+            await _docker.ExecCommandAsync("rm -rf /workspace/cov_corpus");
         }
 
         if (project.SanitizeFilenames)
