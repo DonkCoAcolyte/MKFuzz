@@ -87,15 +87,6 @@ public partial class ResultsViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task ExportArchive()
-    {
-        var zipPath = Path.Combine(Project.OutputPath, $"{Project.Name}_results.zip");
-        if (File.Exists(zipPath)) File.Delete(zipPath);
-        System.IO.Compression.ZipFile.CreateFromDirectory(Project.OutputPath, zipPath);
-        StatusMessage = $"Archive created: {zipPath}";
-    }
-
-    [RelayCommand]
     private async Task DeleteContainer()
     {
         await _docker.DeleteContainerAsync();

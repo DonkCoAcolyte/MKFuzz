@@ -10,7 +10,6 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="5">
             <Button Content="Open Output Folder" Command="{Binding OpenOutputFolderCommand}"/>
             <Button Content="Open Coverage Report" Command="{Binding OpenCoverageCommand}" IsEnabled="{Binding HasCoverage}"/>
-            <Button Content="Export Archive" Command="{Binding ExportArchiveCommand}"/>
             <Button Content="Delete Container" Command="{Binding DeleteContainerCommand}" Margin="5,0"/>
         </StackPanel>
 
