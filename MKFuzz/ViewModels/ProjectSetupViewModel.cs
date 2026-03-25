@@ -12,6 +12,8 @@ namespace MKFuzz.ViewModels;
 
 public partial class ProjectSetupViewModel : ViewModelBase
 {
+    public override string Header => "Project Setup";
+
     private readonly DockerService _docker;
 
     private readonly MainWindowViewModel _mainVm;

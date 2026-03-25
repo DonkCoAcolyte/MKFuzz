@@ -10,6 +10,8 @@ namespace MKFuzz.ViewModels;
 
 public partial class FuzzingViewModel : ViewModelBase
 {
+    public override string Header => "Fuzzing";
+
     private readonly DockerService _docker;
     private readonly BuildService _build;
     private readonly FuzzingService _fuzzing;

@@ -11,6 +11,8 @@ namespace MKFuzz.ViewModels;
 
 public partial class ResultsViewModel : ViewModelBase
 {
+    public override string Header => "Results";
+
     private readonly DockerService _docker;
     private readonly MainWindowViewModel _mainVm;
 
