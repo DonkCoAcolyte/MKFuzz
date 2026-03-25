@@ -94,9 +94,9 @@ public partial class ResultsViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task StopContainer()
+    private async Task DeleteContainer()
     {
-        await _docker.StopContainerAsync();
-        StatusMessage = "Container stopped.";
+        await _docker.DeleteContainerAsync();
+        StatusMessage = "Container deleted.";
     }
 }

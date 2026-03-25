@@ -3,8 +3,10 @@ using Docker.DotNet.Models;
 using MKFuzz.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MKFuzz.Services;
@@ -76,18 +78,20 @@ public class DockerService : IAsyncDisposable
         return (exitCode, stdout, stderr);
     }
 
-    public async Task StopContainerAsync()
+    public async Task DeleteContainerAsync()
     {
         if (_containerId == null) return;
-        await _client.Containers.StopContainerAsync(_containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 5 });
-        await _client.Containers.RemoveContainerAsync(_containerId, new ContainerRemoveParameters { Force = true });
+
+        // Force remove
+        await _client.Containers.RemoveContainerAsync(_containerId, new ContainerRemoveParameters { Force=true });
+
         _containerId = null;
     }
 
     public async ValueTask DisposeAsync()
     {
         if (_containerId != null)
-            await StopContainerAsync();
+            await DeleteContainerAsync();
         _client.Dispose();
     }
 }

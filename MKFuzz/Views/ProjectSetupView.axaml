@@ -99,7 +99,7 @@
                         <NumericUpDown Value="{Binding Project.StopValue}" Minimum="0" Width="200"/>
                     </WrapPanel>
                     <CheckBox IsChecked="{Binding Project.GenerateCoverage}">Generate coverage report</CheckBox>
-                    <CheckBox IsChecked="{Binding Project.KeepContainerAlive}">Keep container alive after fuzzing</CheckBox>
+                    <CheckBox IsChecked="{Binding Project.KeepContainerAlive}">Keep container (alive)</CheckBox>
                     <CheckBox IsChecked="{Binding Project.SanitizeFilenames}">Sanitize filenames (crossrename)</CheckBox>
                 </StackPanel>
             </Expander>

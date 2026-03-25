@@ -11,6 +11,7 @@
             <Button Content="Open Output Folder" Command="{Binding OpenOutputFolderCommand}"/>
             <Button Content="Open Coverage Report" Command="{Binding OpenCoverageCommand}" IsEnabled="{Binding HasCoverage}"/>
             <Button Content="Export Archive" Command="{Binding ExportArchiveCommand}"/>
+            <Button Content="Delete Container" Command="{Binding DeleteContainerCommand}" Margin="5,0"/>
         </StackPanel>
 
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusMessage}" Foreground="Blue" Margin="0,5"/>

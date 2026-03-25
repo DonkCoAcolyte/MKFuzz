@@ -151,6 +151,6 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         if (!_currentProject.KeepContainerAlive)
-            await _docker.StopContainerAsync();
+            await _docker.DeleteContainerAsync();
     }
 }
