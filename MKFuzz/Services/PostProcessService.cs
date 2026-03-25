@@ -42,7 +42,7 @@ public class PostProcessService
             // Create faux structure and run afl-cov-fast
             await _docker.ExecCommandAsync("mkdir -p /workspace/cov_corpus/SESSION000/queue");
             await _docker.ExecCommandAsync("cp -r /workspace/clean_corpus.cmin/* /workspace/cov_corpus/SESSION000/queue/");
-            var covCmd = $"/opt/afl-cov-fast/afl-cov-fast.py -m gcc --code-dir /workspace/src --afl-fuzzing-dir /workspace/cov_corpus --coverage-cmd '{project.CovBinaryPath} {project.TargetArgs}' -j{project.Cores}";
+            var covCmd = $"/opt/afl-cov-fast/afl-cov-fast.py -m llvm --code-dir /workspace/src --afl-fuzzing-dir /workspace/cov_corpus --coverage-cmd '{project.CovBinaryPath} {project.TargetArgs}' --binary-path {project.CovBinaryPath} -j{project.Cores}";
             var covResult = await _docker.ExecCommandAsync(covCmd);
             if (covResult.ExitCode != 0)
             {
