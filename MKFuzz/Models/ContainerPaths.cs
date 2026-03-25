@@ -12,6 +12,6 @@ public static class ContainerPaths
     public const string FuzzBuildPrefix = "cd " + SourceFolder + " &&  CC=afl-clang-fast CXX=afl-clang-fast++ ";
     public const string FuzzBuildSuffix = "";
 
-    public const string CoverageBuildPrefix = "cd " + SourceFolder + " && CC=clang-18 CXX=clang++-18 CFLAGS=\"-fprofile-instr-generate -fcoverage-mapping -O0 -g\" CXXFLAGS=\"-fprofile-instr-generate -fcoverage-mapping -O0 -g\" LDFLAGS=\"-fprofile-instr-generate -fcoverage-mapping\" && ";
+    public const string CoverageBuildPrefix = "cd " + SourceFolder + " && CC=clang-18 CXX=clang++-18 CFLAGS=\"-fprofile-instr-generate -fcoverage-mapping -O0 -g\" CXXFLAGS=\"-fprofile-instr-generate -fcoverage-mapping -O0 -g\" LDFLAGS=\"-fprofile-instr-generate -fcoverage-mapping\" ";
     public const string CoverageBuildSuffix = "";
 }
