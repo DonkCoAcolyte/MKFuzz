@@ -40,7 +40,7 @@ public partial class FuzzingProject : ObservableObject
     private string _covBinaryPath = "";
 
     [ObservableProperty]
-    private string _targetArgs = "@@ /dev/null";
+    private string _targetArgs = "@@";
 
     [ObservableProperty]
     private int _cores = Environment.ProcessorCount;
