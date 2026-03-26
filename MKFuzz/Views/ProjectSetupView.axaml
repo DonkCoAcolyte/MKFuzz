@@ -95,7 +95,7 @@
                         <ComboBox ItemsSource="{Binding StopConditions}" SelectedItem="{Binding Project.StopWhy}" Width="200"/>
                     </WrapPanel>
                     <WrapPanel>
-                        <TextBlock VerticalAlignment="Center" Width="200">Value (seconds/crashes):</TextBlock>
+                        <TextBlock VerticalAlignment="Center" Width="200">Crashes:</TextBlock>
                         <NumericUpDown Value="{Binding Project.StopValue}" Minimum="0" Width="200"/>
                     </WrapPanel>
                     <CheckBox IsChecked="{Binding Project.GenerateCoverage}">Generate coverage report</CheckBox>
