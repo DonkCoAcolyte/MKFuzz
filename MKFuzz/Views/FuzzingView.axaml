@@ -8,8 +8,7 @@
     </Design.DataContext>
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="5">
-            <Button Content="Build Fuzz Target" Command="{Binding BuildFuzzCommand}"/>
-            <Button Content="Build Coverage Target" Command="{Binding BuildCoverageCommand}"/>
+            <Button Content="Build Binaries" Command="{Binding BuildBinariesCommand}"/>
             <Button Content="Start Fuzzing" Command="{Binding StartFuzzingCommand}"/>
             <Button Content="Resume Fuzzing" Command="{Binding ResumeFuzzingCommand}"/>
             <Button Content="Stop Fuzzing" Command="{Binding StopFuzzingCommand}"/>

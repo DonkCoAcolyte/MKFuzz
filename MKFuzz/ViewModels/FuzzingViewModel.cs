@@ -38,19 +38,25 @@ public partial class FuzzingViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task BuildFuzz()
+    private async Task BuildBinaries()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var success = await _build.BuildFuzzTargetAsync(Project, progress);
-        StatusMessage = success ? "Fuzz build done." : "Fuzz build failed.";
-    }
+        var fuzzSuccess = await _build.BuildFuzzTargetAsync(Project, progress);
+        if (!fuzzSuccess)
+        {
+            StatusMessage = "Fuzz build failed.";
+            return;
+        }
 
-    [RelayCommand]
-    private async Task BuildCoverage()
-    {
-        var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var success = await _build.BuildCoverageTargetAsync(Project, progress);
-        StatusMessage = success ? "Coverage build done." : "Coverage build failed.";
+        if (Project.GenerateCoverage)
+        {
+            var covSuccess = await _build.BuildCoverageTargetAsync(Project, progress);
+            StatusMessage = covSuccess ? "Both builds completed successfully." : "Coverage build failed.";
+        }
+        else
+        {
+            StatusMessage = "Fuzz build completed (coverage disabled).";
+        }
     }
 
     [RelayCommand]
