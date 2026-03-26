@@ -21,6 +21,7 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
     private FuzzingViewModel _fuzzingVm;
     private ResultsViewModel _resultsVm;
 
+    public FuzzingViewModel FuzzingVm => _fuzzingVm;
     public ObservableCollection<ViewModelBase> Tabs { get; } = new();
 
     [ObservableProperty]

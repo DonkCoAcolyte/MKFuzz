@@ -7,12 +7,12 @@
         <vm:FuzzingViewModel />
     </Design.DataContext>
     <DockPanel Margin="10">
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="5">
-            <Button Content="Build Binaries" Command="{Binding BuildBinariesCommand}"/>
-            <Button Content="Start Fuzzing" Command="{Binding StartFuzzingCommand}"/>
-            <Button Content="Resume Fuzzing" Command="{Binding ResumeFuzzingCommand}"/>
-            <Button Content="Stop Fuzzing" Command="{Binding StopFuzzingCommand}"/>
-            <Button Content="Analyze Results" Command="{Binding AnalyzeCommand}"/>
+	<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="5">
+		<Button Content="Build Binaries" Command="{Binding BuildBinariesCommand}" IsEnabled="{Binding BuildEnabled}"/>
+		<Button Content="Start Fuzzing" Command="{Binding StartFuzzingCommand}" IsEnabled="{Binding StartFuzzingEnabled}"/>
+		<Button Content="Resume Fuzzing" Command="{Binding ResumeFuzzingCommand}" IsEnabled="{Binding ResumeFuzzingEnabled}"/>
+		<Button Content="Stop Fuzzing" Command="{Binding StopFuzzingCommand}" IsEnabled="True"/>
+        <Button Content="Analyze Results" Command="{Binding AnalyzeCommand}" IsEnabled="{Binding AnalyzeEnabled}"/>
         </StackPanel>
 
         <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,*" DockPanel.Dock="Bottom">

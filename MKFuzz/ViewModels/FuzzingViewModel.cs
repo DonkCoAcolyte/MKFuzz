@@ -17,6 +17,11 @@ public partial class FuzzingViewModel : ViewModelBase
     private readonly FuzzingService _fuzzing;
     private readonly PostProcessService _postProcess;
 
+    // State flags
+    private bool _buildCompleted;
+    private bool _fuzzingActive;
+    private bool _sessionExists;   // true if a fuzzing session has been started (or resumed)
+
     [ObservableProperty]
     private string _rawStats = "";
 
@@ -25,6 +30,19 @@ public partial class FuzzingViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _statusMessage = "";
+
+    // Button enable states
+    [ObservableProperty]
+    private bool _buildEnabled = true;
+
+    [ObservableProperty]
+    private bool _startFuzzingEnabled = false;
+
+    [ObservableProperty]
+    private bool _resumeFuzzingEnabled = false;
+
+    [ObservableProperty]
+    private bool _analyzeEnabled = false;
 
     public ObservableCollection<string> LogEntries { get; } = new();
 
@@ -35,6 +53,21 @@ public partial class FuzzingViewModel : ViewModelBase
         _build = new BuildService(docker);
         _fuzzing = new FuzzingService(docker);
         _postProcess = new PostProcessService(docker);
+    }
+
+    // Called from MainWindowViewModel when the container is deleted or a new project is opened
+    public void ResetState()
+    {
+        _buildCompleted = false;
+        _fuzzingActive = false;
+        _sessionExists = false;
+
+        BuildEnabled = true;
+        StartFuzzingEnabled = false;
+        ResumeFuzzingEnabled = false;
+        AnalyzeEnabled = false;
+        RawStats = "";   // clear old stats
+        StatusMessage = "";
     }
 
     [RelayCommand]
@@ -52,19 +85,30 @@ public partial class FuzzingViewModel : ViewModelBase
         {
             var covSuccess = await _build.BuildCoverageTargetAsync(Project, progress);
             StatusMessage = covSuccess ? "Both builds completed successfully." : "Coverage build failed.";
+            if (!covSuccess) return;
         }
         else
         {
             StatusMessage = "Fuzz build completed (coverage disabled).";
         }
+
+        _buildCompleted = true;
+        BuildEnabled = false;
+        StartFuzzingEnabled = true;
     }
 
     [RelayCommand]
     private async Task StartFuzzing()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var rawStats = new Progress<string>(raw => RawStats = raw);  // replaces previous content each time
+        var rawStats = new Progress<string>(raw => RawStats = raw);
         await _fuzzing.StartFuzzingAsync(Project, progress, rawStats);
+
+        _fuzzingActive = true;
+        _sessionExists = true;
+        StartFuzzingEnabled = false;
+        ResumeFuzzingEnabled = false;
+        AnalyzeEnabled = false;   // analysis only after stopping
         StatusMessage = "Fuzzing started.";
     }
 
@@ -72,8 +116,13 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task ResumeFuzzing()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var rawStats = new Progress<string>(raw => RawStats = raw);  // replaces previous content each time
+        var rawStats = new Progress<string>(raw => RawStats = raw);
         await _fuzzing.ResumeFuzzingAsync(Project, progress, rawStats);
+
+        _fuzzingActive = true;
+        StartFuzzingEnabled = false;
+        ResumeFuzzingEnabled = false;
+        AnalyzeEnabled = false;
         StatusMessage = "Resuming fuzzing...";
     }
 
@@ -81,6 +130,13 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task StopFuzzing()
     {
         await _fuzzing.StopFuzzingAsync();
+
+        _fuzzingActive = false;
+        if (_sessionExists)
+        {
+            ResumeFuzzingEnabled = true;
+            AnalyzeEnabled = true;
+        }
         StatusMessage = "Fuzzing stopped.";
     }
 
@@ -90,5 +146,6 @@ public partial class FuzzingViewModel : ViewModelBase
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
         var success = await _postProcess.ProcessAsync(Project, progress);
         StatusMessage = success ? "Analysis complete." : "Analysis failed.";
+        // Keep AnalyzeEnabled true (user can run analyze repeatedly)
     }
 }
