@@ -53,7 +53,7 @@ public partial class ResultsViewModel : ViewModelBase
             CheckForCoverage();
     }
 
-    private void CheckForCoverage()
+    public void CheckForCoverage()
     {
         if (!Project.GenerateCoverage)
         {

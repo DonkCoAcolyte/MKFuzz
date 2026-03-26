@@ -22,6 +22,7 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
     private ResultsViewModel _resultsVm;
 
     public FuzzingViewModel FuzzingVm => _fuzzingVm;
+    public ResultsViewModel ResultsVm => _resultsVm;
     public ObservableCollection<ViewModelBase> Tabs { get; } = new();
 
     [ObservableProperty]
@@ -46,7 +47,7 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
         _projectSetupVm = projectSetupVm;
         Tabs.Add(projectSetupVm);
 
-        var fuzzingVm = new FuzzingViewModel(_currentProject, _docker);
+        var fuzzingVm = new FuzzingViewModel(_currentProject, _docker, this);
         _fuzzingVm = fuzzingVm;
         Tabs.Add(fuzzingVm);
 

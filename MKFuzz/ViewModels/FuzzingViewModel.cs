@@ -12,6 +12,7 @@ public partial class FuzzingViewModel : ViewModelBase
 {
     public override string Header => "Fuzzing";
 
+    private readonly MainWindowViewModel _mainVm;
     private readonly DockerService _docker;
     private readonly BuildService _build;
     private readonly FuzzingService _fuzzing;
@@ -46,8 +47,9 @@ public partial class FuzzingViewModel : ViewModelBase
 
     public ObservableCollection<string> LogEntries { get; } = new();
 
-    public FuzzingViewModel(FuzzingProject project, DockerService docker)
+    public FuzzingViewModel(FuzzingProject project, DockerService docker, MainWindowViewModel mainVm)
     {
+        _mainVm = mainVm;
         _project = project;
         _docker = docker;
         _build = new BuildService(docker);
@@ -146,6 +148,11 @@ public partial class FuzzingViewModel : ViewModelBase
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
         var success = await _postProcess.ProcessAsync(Project, progress);
         StatusMessage = success ? "Analysis complete." : "Analysis failed.";
+        if (success)
+        {
+            // Refresh coverage status in the Results tab
+            _mainVm.ResultsVm.CheckForCoverage();
+        }
         // Keep AnalyzeEnabled true (user can run analyze repeatedly)
     }
 }
