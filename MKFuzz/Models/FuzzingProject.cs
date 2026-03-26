@@ -6,7 +6,6 @@ namespace MKFuzz.Models;
 public enum StopCondition
 {
     Manual,
-    TimeBased,
     CrashCount
 }
 
@@ -46,7 +45,7 @@ public partial class FuzzingProject : ObservableObject
     private int _cores = Environment.ProcessorCount;
 
     [ObservableProperty]
-    private StopCondition _stopWhen = StopCondition.TimeBased;
+    private StopCondition _stopWhy = StopCondition.Manual;
 
     [ObservableProperty]
     private int _stopValue = 3600;

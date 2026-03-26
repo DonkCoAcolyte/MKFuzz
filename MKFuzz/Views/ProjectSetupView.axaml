@@ -92,7 +92,7 @@
                     </WrapPanel>
                     <WrapPanel>
                         <TextBlock VerticalAlignment="Center" Width="200">Stop condition:</TextBlock>
-                        <ComboBox ItemsSource="{Binding StopConditions}" SelectedItem="{Binding Project.StopWhen}" Width="200"/>
+                        <ComboBox ItemsSource="{Binding StopConditions}" SelectedItem="{Binding Project.StopWhy}" Width="200"/>
                     </WrapPanel>
                     <WrapPanel>
                         <TextBlock VerticalAlignment="Center" Width="200">Value (seconds/crashes):</TextBlock>
