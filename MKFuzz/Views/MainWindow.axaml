@@ -19,17 +19,16 @@
             </MenuItem>
         </Menu>
 
-        <TabControl Grid.Row="1" ItemsSource="{Binding Tabs}" SelectedIndex="0">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Header}" />
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <ContentControl Content="{Binding}" />
-                </DataTemplate>
-            </TabControl.ContentTemplate>
+	    <TabControl Grid.Row="1">
+		    <TabItem Header="Project Setup" IsEnabled="True">
+			    <ContentControl Content="{Binding Tabs[0]}" />
+		    </TabItem>
+		    <TabItem Header="Fuzzing" IsEnabled="{Binding IsFuzzingContainerRunning}">
+			    <ContentControl Content="{Binding Tabs[1]}" />
+		    </TabItem>
+		    <TabItem Header="Results" IsEnabled="{Binding IsFuzzingContainerRunning}">
+			    <ContentControl Content="{Binding Tabs[2]}" />
+		    </TabItem>
         </TabControl>
     </Grid>
 </Window>

@@ -46,6 +46,12 @@ public partial class ProjectSetupViewModel : ViewModelBase
         Project = project;
         _docker = docker;
         _mainVm = mainVm;
+
+        _mainVm.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(MainWindowViewModel.IsFuzzingContainerRunning))
+                StartContainerCommand.NotifyCanExecuteChanged();
+        };
     }
 
     // Handle project changes: detach from old, attach to new
@@ -120,6 +126,7 @@ public partial class ProjectSetupViewModel : ViewModelBase
                 { Project.OutputPath, $"{ContainerPaths.OutputMount}:rw" }
             };
             await _docker.StartContainerAsync("fuzzing-image:latest", volumes);
+            MainVm.IsFuzzingContainerRunning = true;
             StatusMessage = "Container started.";
         }
         catch (Exception ex)
@@ -127,7 +134,7 @@ public partial class ProjectSetupViewModel : ViewModelBase
             StatusMessage = $"Error: {ex.Message}";
         }
     }
-    private bool CanStartContainer() => !string.IsNullOrEmpty(Project.SourcePath);
+    private bool CanStartContainer() => !string.IsNullOrEmpty(Project.SourcePath) && !MainVm.IsFuzzingContainerRunning;
 
     [RelayCommand]
     private void EditHarness()

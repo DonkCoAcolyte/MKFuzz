@@ -90,6 +90,7 @@ public partial class ResultsViewModel : ViewModelBase
     private async Task DeleteContainer()
     {
         await _docker.DeleteContainerAsync();
+        _mainVm.IsFuzzingContainerRunning = false;
         StatusMessage = "Container deleted.";
     }
 }

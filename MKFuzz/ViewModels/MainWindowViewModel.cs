@@ -29,10 +29,14 @@ public partial class MainWindowViewModel : ViewModelBase, IAsyncDisposable
     [ObservableProperty]
     private string _dockerStatusColor = "Gray";
 
+    [ObservableProperty]
+    private bool _isFuzzingContainerRunning;
+
     public IStorageProvider? StorageProvider { get; set; }
 
     public MainWindowViewModel()
     {
+        IsFuzzingContainerRunning = false;
         _currentProject = new FuzzingProject();
         _docker = new DockerService();
         _envService = new DockerEnvironmentService();
