@@ -48,7 +48,7 @@ public partial class FuzzingProject : ObservableObject
     private StopCondition _stopWhy = StopCondition.Manual;
 
     [ObservableProperty]
-    private int _stopValue = 3600;
+    private int _stopValue = 10;
 
     [ObservableProperty]
     private bool _generateCoverage = true;
