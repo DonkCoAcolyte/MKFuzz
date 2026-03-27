@@ -124,7 +124,9 @@ RUN ln -s /usr/bin/llvm-profdata-18 /usr/bin/llvm-profdata && \
 # ----------------------------------------------------------------------
 RUN git clone --recursive https://github.com/airbus-seclab/afl-cov-fast.git /opt/afl-cov-fast && \
     cd /opt/afl-cov-fast && \
-    pip3 install -r requirements.txt
+    pip3 install -r requirements.txt && \
+	# Patch utils.py to handle non-UTF-8 stderr gracefully
+    sed -i 's/\(stderr\.decode("utf-8")\)/stderr.decode("utf-8", errors="replace")/g' utils.py
 	
 # ----------------------------------------------------------------------
 # 9. Install CrossRename for Windows-compatible filename conversion (afl generates bad names)
