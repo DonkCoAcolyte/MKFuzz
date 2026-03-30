@@ -44,16 +44,24 @@ The ability to select this tab (or the results tab for that matter) only unlocks
 <img src="MKFuzz/Assets/showcase images/fuzzing.png"/>
 - the Build Binaries button launches both the fuzz build command and the coverage build command (if coverage is enabled) in sequence. The process will produce messages in the log console (the left one).
 - the Start Fuzzing button starts the fuzzing process using afl-multicore and an auto-generated config.
-  var config = new
+```c#
+  var config = new 
 {
-    target = project.FuzzBinaryPath,
-    cmdline = project.TargetArgs,
-    input = "/workspace/seeds",
-    output = "/workspace/sync",
-    memory = project.MemoryLimit.ToString(), //these two are hardcoded in, not exposed in project setup
-    timeout = project.TimeoutMs.ToString() //i should probably change that, but it didnt quite come up yet.
-};
 
+  target = project.FuzzBinaryPath,
+  
+  cmdline = project.TargetArgs,
+  
+  input = "/workspace/seeds",
+  
+  output = "/workspace/sync",
+  
+  memory = project.MemoryLimit.ToString(), //these two are hardcoded in, not exposed in project setup
+  
+  timeout = project.TimeoutMs.ToString() //i should probably change that, but it didnt quite come up yet.
+  
+};
+```
 - the Resume Fuzzing button resumes the stopped fuzzing session.
 - the Stop Fuzzing button stops fuzzing using afl-multikill. Pressing it multiple times does nothing.
 - the Analyze results button does many things: collects crashes, minimizes the corpus (queue), generates a coverage report based on the minimized corpus (because it also makes sure no crashes are present and it shouldnt lose us coverage, in theory), saves the coverage report, sanitizes the corpus/crashes filenames, transfers them over to the output directory volume mount. After all that, processing is complete.
