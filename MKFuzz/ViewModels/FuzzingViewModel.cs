@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MKFuzz.Models;
 using MKFuzz.Services;
+
 
 namespace MKFuzz.ViewModels;
 
@@ -104,13 +106,16 @@ public partial class FuzzingViewModel : ViewModelBase
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
         var rawStats = new Progress<string>(raw => RawStats = raw);
-        await _fuzzing.StartFuzzingAsync(Project, progress, rawStats);
+        await _fuzzing.StartFuzzingAsync(Project, progress, rawStats, () =>
+        {
+            Dispatcher.UIThread.Post(() => StopFuzzingCommand.Execute(null));
+        });
 
         _fuzzingActive = true;
         _sessionExists = true;
         StartFuzzingEnabled = false;
         ResumeFuzzingEnabled = false;
-        AnalyzeEnabled = false;   // analysis only after stopping
+        AnalyzeEnabled = false;
         StatusMessage = "Fuzzing started.";
     }
 
@@ -119,7 +124,10 @@ public partial class FuzzingViewModel : ViewModelBase
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
         var rawStats = new Progress<string>(raw => RawStats = raw);
-        await _fuzzing.ResumeFuzzingAsync(Project, progress, rawStats);
+        await _fuzzing.ResumeFuzzingAsync(Project, progress, rawStats, () =>
+        {
+            Dispatcher.UIThread.Post(() => StopFuzzingCommand.Execute(null));
+        });
 
         _fuzzingActive = true;
         StartFuzzingEnabled = false;
@@ -127,6 +135,7 @@ public partial class FuzzingViewModel : ViewModelBase
         AnalyzeEnabled = false;
         StatusMessage = "Resuming fuzzing...";
     }
+
 
     [RelayCommand]
     private async Task StopFuzzing()

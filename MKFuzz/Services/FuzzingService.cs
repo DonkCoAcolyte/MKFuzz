@@ -1,6 +1,7 @@
 ﻿using MKFuzz.Models;
 using System;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ public class FuzzingService
         _docker = docker;
     }
 
-    public async Task StartFuzzingAsync(FuzzingProject project, IProgress<string> progress, IProgress<string> rawStats)
+    public async Task StartFuzzingAsync(FuzzingProject project, IProgress<string> progress, IProgress<string> rawStats, Action onCrashThresholdReached)
     {
         var config = new
         {
@@ -48,6 +49,17 @@ public class FuzzingService
                     if (result.ExitCode == 0)
                     {
                         rawStats.Report(result.Stdout);
+
+                        // Check crash count condition
+                        if (project.StopWhy == StopCondition.CrashCount)
+                        {
+                            int crashes = ParseCrashes(result.Stdout);
+                            if (crashes >= project.StopValue)
+                            {
+                                onCrashThresholdReached?.Invoke();
+                                break; // exit loop – fuzzer will be stopped by the action
+                            }
+                        }
                     }
                     else
                     {
@@ -62,7 +74,7 @@ public class FuzzingService
         });
     }
 
-    public async Task ResumeFuzzingAsync(FuzzingProject project, IProgress<string> progress, IProgress<string> rawStats)
+    public async Task ResumeFuzzingAsync(FuzzingProject project, IProgress<string> progress, IProgress<string> rawStats, Action onCrashThresholdReached)
     {
         var checkCmd = "test -d /workspace/sync && echo exists";
         var check = await _docker.ExecCommandAsync(checkCmd);
@@ -99,6 +111,16 @@ public class FuzzingService
                     if (result.ExitCode == 0)
                     {
                         rawStats.Report(result.Stdout);
+
+                        if (project.StopWhy == StopCondition.CrashCount)
+                        {
+                            int crashes = ParseCrashes(result.Stdout);
+                            if (crashes >= project.StopValue)
+                            {
+                                onCrashThresholdReached?.Invoke();
+                                break;
+                            }
+                        }
                     }
                     else
                     {
@@ -121,5 +143,20 @@ public class FuzzingService
             await _monitorTask;
         _monitorTask = null;
         _cts = null;
+    }
+
+    private int ParseCrashes(string output)
+    {
+        var lines = output.Split('\n');
+        foreach (var line in lines)
+        {
+            if (line.Contains("Crashes saved"))
+            {
+                var match = Regex.Match(line, @":\s*(\d+)");
+                if (match.Success)
+                    return int.Parse(match.Groups[1].Value);
+            }
+        }
+        return 0;
     }
 }
