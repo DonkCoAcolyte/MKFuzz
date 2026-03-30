@@ -38,3 +38,24 @@ What i dont think belongs above, i put here. Contains various options.
 ### Buttons in the corner (SE)
 - the Save Project button saves the current project set up in a .json file. Later that file can be opened using the option in the file menu up top.
 - the Start Container button starts the fuzzing-image:latest container. The button starts disabled, only activated once ANYTHING is input into the Source Folder field. This isnt really a smart way to go about it, will revise it in the future. Not right now thoughhhhhhh.
+
+## Fuzzing
+The ability to select this tab (or the results tab for that matter) only unlocks if you start the fuzzing container. Once you delete the container, you will once again lose access to this tab (done because all buttons here make calls to the container that you start).
+<img src="MKFuzz/Assets/showcase images/fuzzing.png"/>
+- the Build Binaries button launches both the fuzz build command and the coverage build command (if coverage is enabled) in sequence. The process will produce messages in the log console (the left one).
+- the Start Fuzzing button starts the fuzzing process using afl-multicore and an auto-generated config.
+  var config = new
+{
+    target = project.FuzzBinaryPath,
+    cmdline = project.TargetArgs,
+    input = "/workspace/seeds",
+    output = "/workspace/sync",
+    memory = project.MemoryLimit.ToString(), //these two are hardcoded in, not exposed in project setup
+    timeout = project.TimeoutMs.ToString() //i should probably change that, but it didnt quite come up yet.
+};
+
+- the Resume Fuzzing button resumes the stopped fuzzing session.
+- the Stop Fuzzing button stops fuzzing using afl-multikill. Pressing it multiple times does nothing.
+- the Analyze results button does many things: collects crashes, minimizes the corpus (queue), generates a coverage report based on the minimized corpus (because it also makes sure no crashes are present and it shouldnt lose us coverage, in theory), saves the coverage report, sanitizes the corpus/crashes filenames, transfers them over to the output directory volume mount. After all that, processing is complete.
+
+You may notice during use that buttons seem to enable/disable as you go. Thats because you are restricted by design from using these buttons in the wrong order.
