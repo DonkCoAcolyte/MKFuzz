@@ -68,3 +68,31 @@ The ability to select this tab (or the results tab for that matter) only unlocks
 
 You may notice during use that buttons seem to enable/disable as you go. Thats because you are restricted by design from using these buttons in the wrong order.
 - the Consoles are divided in the middle. The left part is the log console, where you see reports of other operations completing successfuly (or throwing exceptions). The right side regularly refreshes during fuzzing displaying the output of afl-whatsup on the fuzzing directory. This allows you to see the relevant stats. For now the update interval is fixed at the default afl-fuzz value of 60 seconds, but im planning on either changing it to a faster one or to make it configurable.
+
+## Results
+The results tab exists strictly for convenience sake since all the actual work is done in the fuzzing tab. Currently no additional functionality or visualisation of relevant data is implemented. It was planned to have this be the part where session stats and potential issues get highlighted but that would require work implementing such a system, which is a bit out of scope for now.
+
+<img src="/MKFuzz/Assets/showcase images/results.png">
+
+### Open Output Folder
+the Open Output Folder button opens the output folder as is specified in project setup. We will now explore the typical contents of this directory.
+
+<img src="/MKFuzz/Assets/showcase images/outputFolder.png">
+
+The results of any given fuzzing session are: 
+- the minimized corpus used in the fuzzing campaign (the minimum amount of test cases used that you would need to recreate the current achieved code coverage). This is to facilitate someone resuming fuzzing the same project, so they can use the corpus in the seed folder. This will take the fuzzer to the places it needs to go without it having to repeat all of its work all over. The contents are ultimately just a bunch of input files, named by afl according to its conventions (sanitized for windows).
+  
+<img src="/MKFuzz/Assets/showcase images/minimizedCorpus.png">
+
+- the crashes dedup folder contains all unique crash causing inputs, ~~along with a gdb script that, when used, prints out the estimated severity of the crash~~. The gdb scripts problem is that it is made to run in gdb (shocker, right). It also expects to have the non-sanitized filenames. To put it bluntly, right now the inclusion of this script hardly serves any purpose. In the future i will make sure to output the informative result of executing this script instead.
+  
+<img src="/MKFuzz/Assets/showcase images/crashesDedup.png">
+
+- the coverage report folder, should you choose to actually generate a coverage report during project setup, contains the coverage report in the form of a series of html files. To access the main page use "index.html", which will hopefully open a website in your browser. From there, you are free to explore.
+  
+<img src="/MKFuzz/Assets/showcase images/lcovIndex.png">
+
+### Open Coverage Report
+just opens the index.html file for you if you generated the coverage report, opening the main report page.
+### Delete container
+Deletes the fuzzing docker container used. It should be noted that the fuzzing container already gets deleted automatically should you exit the fuzzing orchestrator gui properly (if you didnt select that you want to keep the container during project setup). However, this button allows you to delete containers when project setup specifies that the container should be kept alive, so theres that. 
