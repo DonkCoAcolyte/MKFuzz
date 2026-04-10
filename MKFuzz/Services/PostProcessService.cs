@@ -17,7 +17,7 @@ public class PostProcessService
     public async Task<bool> ProcessAsync(FuzzingProject project, IProgress<string> progress)
     {
         progress.Report("Collecting crashes...");
-        var collectCmd = $"afl-collect -e gdb_script -r -rr -j {project.Cores} /workspace/sync /workspace/crashes_dedup -- {project.FuzzBinaryPath} {project.TargetArgs}";
+        var collectCmd = $"afl-collect -e /workspace/crashes_dedup/exploitable_gdb_script -d /workspace/crashes_dedup/crashes.db -r -rr -j {project.Cores} /workspace/sync /workspace/crashes_dedup -- {project.FuzzBinaryPath} {project.TargetArgs}";
         var result = await _docker.ExecCommandAsync(collectCmd);
         if (result.ExitCode != 0)
         {
