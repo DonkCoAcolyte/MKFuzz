@@ -49,8 +49,8 @@ public class DockerService : IAsyncDisposable
         _containerId = response.ID;
         await _client.Containers.StartContainerAsync(_containerId, null);
         // Create the writable source directory and copy the read-only source into it
-        await ExecCommandAsync($"mkdir -p {ContainerPaths.SourceFolder}");
-        await ExecCommandAsync($"cp -r {ContainerPaths.SourceMount}/. {ContainerPaths.SourceFolder}");
+        await ExecCommandAsync($"mkdir -p {ContainerConfig.SourceFolder}");
+        await ExecCommandAsync($"cp -r {ContainerConfig.SourceMount}/. {ContainerConfig.SourceFolder}");
     }
 
     public async Task<(int ExitCode, string Stdout, string Stderr)> ExecCommandAsync(string command)

@@ -1,6 +1,6 @@
 ﻿namespace MKFuzz.Models;
 
-public static class ContainerPaths
+public static class ContainerConfig
 {
     // Mount points inside container
     public const string SourceFolder = "/workspace/src";

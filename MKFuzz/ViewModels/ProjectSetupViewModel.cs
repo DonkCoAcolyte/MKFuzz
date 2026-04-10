@@ -31,15 +31,15 @@ public partial class ProjectSetupViewModel : ViewModelBase
     private string _statusMessage = "";
 
     // Mount points (from central constants)
-    public string SourceFolder => ContainerPaths.SourceFolder;
-    public string MountSeeds => ContainerPaths.SeedsMount;
-    public string MountOutput => ContainerPaths.OutputMount;
+    public string SourceFolder => ContainerConfig.SourceFolder;
+    public string MountSeeds => ContainerConfig.SeedsMount;
+    public string MountOutput => ContainerConfig.OutputMount;
 
     // Build command static parts
-    public string FuzzBuildPrefix => ContainerPaths.FuzzBuildPrefix;
-    public string FuzzBuildSuffix => ContainerPaths.FuzzBuildSuffix;
-    public string CoverageBuildPrefix => ContainerPaths.CoverageBuildPrefix;
-    public string CoverageBuildSuffix => ContainerPaths.CoverageBuildSuffix;
+    public string FuzzBuildPrefix => ContainerConfig.FuzzBuildPrefix;
+    public string FuzzBuildSuffix => ContainerConfig.FuzzBuildSuffix;
+    public string CoverageBuildPrefix => ContainerConfig.CoverageBuildPrefix;
+    public string CoverageBuildSuffix => ContainerConfig.CoverageBuildSuffix;
 
     public ProjectSetupViewModel(FuzzingProject project, DockerService docker, MainWindowViewModel mainVm)
     {
@@ -121,9 +121,9 @@ public partial class ProjectSetupViewModel : ViewModelBase
             StatusMessage = "Starting container...";
             var volumes = new Dictionary<string, string>
             {
-                { Project.SourcePath, $"{ContainerPaths.SourceMount}:ro" },
-                { Project.SeedsPath, $"{ContainerPaths.SeedsMount}:ro" },
-                { Project.OutputPath, $"{ContainerPaths.OutputMount}:rw" }
+                { Project.SourcePath, $"{ContainerConfig.SourceMount}:ro" },
+                { Project.SeedsPath, $"{ContainerConfig.SeedsMount}:ro" },
+                { Project.OutputPath, $"{ContainerConfig.OutputMount}:rw" }
             };
             await _docker.StartContainerAsync("fuzzing-image:latest", volumes);
             MainVm.IsFuzzingContainerRunning = true;
