@@ -9,7 +9,7 @@ namespace MKFuzz.Services;
 
 public class FuzzingService
 {
-    private const int AFL_FUZZER_STATS_UPDATE_INTERVAL = 60 * 1000;
+    private int AFL_FUZZER_STATS_UPDATE_INTERVAL = 60 * 1000;
 
     private readonly DockerService _docker;
     private CancellationTokenSource? _cts;
@@ -22,19 +22,20 @@ public class FuzzingService
 
     public async Task StartFuzzingAsync(FuzzingProject project, IProgress<string> progress, IProgress<string> rawStats, Action onCrashThresholdReached)
     {
+        AFL_FUZZER_STATS_UPDATE_INTERVAL = project.AflFuzzerStatsUpdateIntervalSeconds * 1000;
         var config = new
         {
             target = project.FuzzBinaryPath,
             cmdline = project.TargetArgs,
             input = "/workspace/seeds",
             output = "/workspace/sync",
-            memory = project.MemoryLimit.ToString(),
+            mem_limit = project.MemoryLimit.ToString(),
             timeout = project.TimeoutMs.ToString()
         };
         var configJson = JsonSerializer.Serialize(config);
         await _docker.ExecCommandAsync($"echo '{configJson}' > /workspace/fuzz.json");
 
-        var fuzzCmd = $"cd /workspace && afl-multicore -c fuzz.json start {project.Cores}";
+        var fuzzCmd = $"export AFL_FUZZER_STATS_UPDATE_INTERVAL={project.AflFuzzerStatsUpdateIntervalSeconds} && cd /workspace && afl-multicore -c fuzz.json start {project.Cores}";
         _ = _docker.ExecCommandAsync(fuzzCmd);
 
         _cts = new CancellationTokenSource();
@@ -90,7 +91,8 @@ public class FuzzingService
             cmdline = project.TargetArgs,
             input = "/workspace/seeds",
             output = "/workspace/sync",
-            memory = project.MemoryLimit.ToString(),
+            afl_margs = $"-u {project.AflFuzzerStatsUpdateIntervalSeconds}",
+            mem_limit = project.MemoryLimit.ToString(),
             timeout = project.TimeoutMs.ToString()
         };
         var configJson = JsonSerializer.Serialize(config);

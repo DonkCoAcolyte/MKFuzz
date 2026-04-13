@@ -87,16 +87,20 @@
             <Expander Header="Fuzzing Settings">
                 <StackPanel Margin="10" Spacing="5">
                     <WrapPanel>
-                        <TextBlock VerticalAlignment="Center" Width="200">CPU Cores:</TextBlock>
+                        <TextBlock VerticalAlignment="Center" Width="250">CPU Cores:</TextBlock>
                         <NumericUpDown Value="{Binding Project.Cores}" Minimum="1" Maximum="64" Width="200"/>
                     </WrapPanel>
                     <WrapPanel>
-                        <TextBlock VerticalAlignment="Center" Width="200">Stop condition:</TextBlock>
+                        <TextBlock VerticalAlignment="Center" Width="250">Stop condition:</TextBlock>
                         <ComboBox ItemsSource="{Binding StopConditions}" SelectedItem="{Binding Project.StopWhy}" Width="200"/>
                     </WrapPanel>
                     <WrapPanel>
-                        <TextBlock VerticalAlignment="Center" Width="200">Crashes:</TextBlock>
-                        <NumericUpDown Value="{Binding Project.StopValue}" Minimum="0" Width="200"/>
+                        <TextBlock VerticalAlignment="Center" Width="250">Crashes:</TextBlock>
+                        <NumericUpDown Value="{Binding Project.StopValue}" Minimum="1" Width="200"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Width="250">Stats-update interval (seconds):</TextBlock>
+                        <NumericUpDown Value="{Binding Project.AflFuzzerStatsUpdateIntervalSeconds}" Minimum="1" Width="200"/>
                     </WrapPanel>
                     <CheckBox IsChecked="{Binding Project.GenerateCoverage}">Generate coverage report</CheckBox>
                     <CheckBox IsChecked="{Binding Project.KeepContainerAlive}">Keep container (alive)</CheckBox>

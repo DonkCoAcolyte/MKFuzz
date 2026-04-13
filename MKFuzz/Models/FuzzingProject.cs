@@ -51,6 +51,9 @@ public partial class FuzzingProject : ObservableObject
     private int _stopValue = 10;
 
     [ObservableProperty]
+    private int _aflFuzzerStatsUpdateIntervalSeconds = 60;
+
+    [ObservableProperty]
     private bool _generateCoverage = true;
 
     [ObservableProperty]
