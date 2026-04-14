@@ -53,6 +53,26 @@
                 <Button Content="Check Environment" Command="{Binding MainVm.CheckEnvironmentCommand}" Margin="5,0"/>
             </WrapPanel>
 
+            <!-- Fuzzing Setup -->
+            <Expander Header="Fuzzing Setup">
+				<StackPanel Margin="10" Spacing="10">
+					<WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Width="250">Compiler:</TextBlock>
+                        <ComboBox ItemsSource="{Binding Compilers}" SelectedItem="{Binding Project.Compiler}" Width="200"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Width="250">Build system:</TextBlock>
+                        <ComboBox ItemsSource="{Binding BuildSystems}" SelectedItem="{Binding Project.BuildSystem}" Width="200"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Width="250">Input type:</TextBlock>
+                        <ComboBox ItemsSource="{Binding InputTypes}" SelectedItem="{Binding Project.InputType}" Width="200"/>
+                    </WrapPanel>
+                    <CheckBox IsChecked="{Binding Project.UseSanitizers}">Use sanitizers</CheckBox>
+                    <CheckBox IsChecked="{Binding Project.UseCMPLOG}">Use CMPLOG</CheckBox>
+                </StackPanel>
+            </Expander>
+
             <Expander Header="Build and Target">
                 <StackPanel Margin="10" Spacing="10">
                     <!-- Fuzz build command with static prefix/suffix from ViewModel -->

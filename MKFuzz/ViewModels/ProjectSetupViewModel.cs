@@ -26,6 +26,10 @@ public partial class ProjectSetupViewModel : ViewModelBase
     public IStorageProvider? StorageProvider { get; set; }
 
     public Array StopConditions => Enum.GetValues(typeof(StopCondition));
+    public Array Compilers => Enum.GetValues(typeof(Compilers));
+    public Array BuildSystems => Enum.GetValues(typeof(BuildSystems));
+    public Array InputTypes => Enum.GetValues(typeof(InputTypes));
+
 
     [ObservableProperty]
     private string _statusMessage = "";
