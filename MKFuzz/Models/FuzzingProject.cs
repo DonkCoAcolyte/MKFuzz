@@ -9,6 +9,25 @@ public enum StopCondition
     CrashCount
 }
 
+public enum Compilers
+{
+    llvm,
+    lto
+}
+
+public enum BuildSystems
+{
+    cmake,
+    raw
+}
+
+public enum InputTypes
+{
+    undefined,
+    ascii,
+    binary
+}
+
 public partial class FuzzingProject : ObservableObject
 {
     [ObservableProperty]
@@ -25,6 +44,21 @@ public partial class FuzzingProject : ObservableObject
 
     [ObservableProperty]
     private string _outputPath = "";
+
+    [ObservableProperty]
+    private Compilers _compiler = Compilers.llvm;
+
+    [ObservableProperty]
+    private BuildSystems _buildSystem = BuildSystems.cmake;
+
+    [ObservableProperty]
+    private InputTypes _inputType = InputTypes.undefined;
+
+    [ObservableProperty]
+    private bool _useSanitizers = false;
+
+    [ObservableProperty]
+    private bool _useCMPLOG = false;
 
     [ObservableProperty]
     private string _fuzzBuildCommand = "make -j4";
