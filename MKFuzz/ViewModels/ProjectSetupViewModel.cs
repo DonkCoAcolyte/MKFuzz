@@ -72,6 +72,24 @@ public partial class ProjectSetupViewModel : ViewModelBase
     {
         if (e.PropertyName == nameof(FuzzingProject.SourcePath))
             StartContainerCommand.NotifyCanExecuteChanged();
+        if (e.PropertyName == nameof(FuzzingProject.BuildSystem))
+        {
+            switch (Project.BuildSystem)
+            {
+                case Models.BuildSystems.cmake:
+                    Project.FuzzBuildCommand = ContainerConfig.cmakeFuzzBuildCommand;
+                    Project.SanitizersBuildCommand = ContainerConfig.cmakeSanitizersBuildCommand;
+                    Project.CmplogBuildCommand = ContainerConfig.cmakeCmplogBuildCommand;
+                    Project.CoverageBuildCommand = ContainerConfig.cmakeCovBuildCommand;
+                    break;
+                case Models.BuildSystems.raw:
+                    Project.FuzzBuildCommand = ContainerConfig.rawFuzzBuildCommand;
+                    Project.SanitizersBuildCommand = ContainerConfig.rawSanitizersBuildCommand;
+                    Project.CmplogBuildCommand = ContainerConfig.rawCmplogBuildCommand;
+                    Project.CoverageBuildCommand = ContainerConfig.rawCovBuildCommand;
+                    break;
+            }
+        }
     }
 
     [RelayCommand]
