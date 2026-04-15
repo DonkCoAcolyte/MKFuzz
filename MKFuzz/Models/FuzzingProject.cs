@@ -9,12 +9,6 @@ public enum StopCondition
     CrashCount
 }
 
-public enum Compilers
-{
-    llvm,
-    lto
-}
-
 public enum BuildSystems
 {
     cmake,
@@ -46,9 +40,6 @@ public partial class FuzzingProject : ObservableObject
     private string _outputPath = "";
 
     [ObservableProperty]
-    private Compilers _compiler = Compilers.llvm;
-
-    [ObservableProperty]
     private BuildSystems _buildSystem = BuildSystems.cmake;
 
     [ObservableProperty]
@@ -64,10 +55,22 @@ public partial class FuzzingProject : ObservableObject
     private string _fuzzBuildCommand = "make -j4";
 
     [ObservableProperty]
+    private string _sanitizersBuildCommand = "make -j4"; // we will use ASAN (seems to be the most important one) and UBSAN (doesnt strike me as a necessary thing but its compatible with ASAN so shouldnt hurt)
+
+    [ObservableProperty]
+    private string _cmplogBuildCommand = "make -j4";
+
+    [ObservableProperty]
     private string _coverageBuildCommand = "make -j4";
 
     [ObservableProperty]
     private string _fuzzBinaryPath = "";
+
+    [ObservableProperty]
+    private string _sanitizersBinaryPath = "";
+
+    [ObservableProperty]
+    private string _cmplogBinaryPath = "";
 
     [ObservableProperty]
     private string _covBinaryPath = "";

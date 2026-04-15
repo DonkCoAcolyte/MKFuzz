@@ -26,7 +26,6 @@ public partial class ProjectSetupViewModel : ViewModelBase
     public IStorageProvider? StorageProvider { get; set; }
 
     public Array StopConditions => Enum.GetValues(typeof(StopCondition));
-    public Array Compilers => Enum.GetValues(typeof(Compilers));
     public Array BuildSystems => Enum.GetValues(typeof(BuildSystems));
     public Array InputTypes => Enum.GetValues(typeof(InputTypes));
 
@@ -39,15 +38,11 @@ public partial class ProjectSetupViewModel : ViewModelBase
     public string MountSeeds => ContainerConfig.SeedsMount;
     public string MountOutput => ContainerConfig.OutputMount;
 
-    // Build command static parts
-    public string FuzzBuildPrefix => ContainerConfig.FuzzBuildPrefix;
-    public string FuzzBuildSuffix => ContainerConfig.FuzzBuildSuffix;
-    public string CoverageBuildPrefix => ContainerConfig.CoverageBuildPrefix;
-    public string CoverageBuildSuffix => ContainerConfig.CoverageBuildSuffix;
-
     public ProjectSetupViewModel(FuzzingProject project, DockerService docker, MainWindowViewModel mainVm)
     {
         Project = project;
+        Project.FuzzBuildCommand = ContainerConfig.cmakeFuzzBuildCommand;
+        Project.CoverageBuildCommand = ContainerConfig.cmakeCovBuildCommand;
         _docker = docker;
         _mainVm = mainVm;
 

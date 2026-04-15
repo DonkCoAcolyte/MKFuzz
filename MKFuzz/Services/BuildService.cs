@@ -18,7 +18,7 @@ public class BuildService
     {
         progress.Report("Building fuzz target...");
         // Build command: prefix + user command + suffix
-        string fullCommand = $"{ContainerConfig.FuzzBuildPrefix}{project.FuzzBuildCommand}{ContainerConfig.FuzzBuildSuffix}";
+        string fullCommand = $"{project.FuzzBuildCommand}";
         var result = await _docker.ExecCommandAsync(fullCommand);
         if (result.ExitCode != 0)
         {
@@ -33,7 +33,7 @@ public class BuildService
     {
         if (!project.GenerateCoverage) return true;
         progress.Report("Building coverage target...");
-        string fullCommand = $"{ContainerConfig.CoverageBuildPrefix}{project.CoverageBuildCommand}{ContainerConfig.CoverageBuildSuffix}";
+        string fullCommand = $"{project.CoverageBuildCommand}";
         var result = await _docker.ExecCommandAsync(fullCommand);
         if (result.ExitCode != 0)
         {
