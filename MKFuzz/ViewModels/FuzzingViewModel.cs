@@ -78,24 +78,29 @@ public partial class FuzzingViewModel : ViewModelBase
     private async Task BuildBinaries()
     {
         var progress = new Progress<string>(msg => LogEntries.Add(msg));
-        var fuzzSuccess = await _build.BuildFuzzTargetAsync(Project, progress);
-        if (!fuzzSuccess)
+
+        if (!await _build.BuildFuzzTargetAsync(Project, progress))
         {
             StatusMessage = "Fuzz build failed.";
             return;
         }
-
-        if (Project.GenerateCoverage)
+        if (!await _build.BuildSanitizersTargetAsync(Project, progress))
         {
-            var covSuccess = await _build.BuildCoverageTargetAsync(Project, progress);
-            StatusMessage = covSuccess ? "Both builds completed successfully." : "Coverage build failed.";
-            if (!covSuccess) return;
+            StatusMessage = "Sanitized build failed.";
+            return;
         }
-        else
+        if (!await _build.BuildCmplogTargetAsync(Project, progress))
         {
-            StatusMessage = "Fuzz build completed (coverage disabled).";
+            StatusMessage = "CMPLOG build failed.";
+            return;
+        }
+        if (!await _build.BuildCoverageTargetAsync(Project, progress))
+        {
+            StatusMessage = "Coverage build failed.";
+            return;
         }
 
+        StatusMessage = "All builds completed successfully.";
         _buildCompleted = true;
         BuildEnabled = false;
         StartFuzzingEnabled = true;
