@@ -42,6 +42,8 @@ public partial class ProjectSetupViewModel : ViewModelBase
     {
         Project = project;
         Project.FuzzBuildCommand = ContainerConfig.cmakeFuzzBuildCommand;
+        Project.SanitizersBuildCommand = ContainerConfig.cmakeSanitizersBuildCommand;
+        Project.CmplogBuildCommand = ContainerConfig.cmakeCmplogBuildCommand;
         Project.CoverageBuildCommand = ContainerConfig.cmakeCovBuildCommand;
         _docker = docker;
         _mainVm = mainVm;

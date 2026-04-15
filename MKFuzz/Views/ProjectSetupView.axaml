@@ -72,23 +72,40 @@
 
             <Expander Header="Build and Target">
                 <StackPanel Margin="10" Spacing="10">
-                    <!-- Fuzz build command with static prefix/suffix from ViewModel -->
+                    <!-- Fuzz build command from ViewModel -->
                     <StackPanel>
                         <TextBlock Text="Fuzz build command:" FontWeight="Bold" Margin="0,0,0,5"/>
                         <TextBox Text="{Binding Project.FuzzBuildCommand}" Margin="5,0"/>
+                        <TextBlock Text="Fuzz binary path (in container):" Margin="0,0,0,5"/>
+                        <TextBox Watermark="Fuzz binary path (in container)" Text="{Binding Project.FuzzBinaryPath}"/>
+                    </StackPanel>
+
+                    <!-- Sanitizers build command from ViewModel -->
+                    <StackPanel>
+                        <TextBlock Text="Sanitizer build command:" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Project.SanitizersBuildCommand}" Margin="5,0" IsEnabled="{Binding Project.UseSanitizers}"/>
+                        <TextBlock Text="Sanitized binary path (in container):" Margin="0,0,0,5"/>
+                        <TextBox Watermark="Sanitized binary path (in container)" Text="{Binding Project.SanitizersBinaryPath}" IsEnabled="{Binding Project.UseSanitizers}"/>
+                    </StackPanel>
+
+                    <!-- CMPLOG build command from ViewModel -->
+                    <StackPanel>
+                        <TextBlock Text="CMPLOG build command:" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Project.CmplogBuildCommand}" Margin="5,0" IsEnabled="{Binding Project.UseCMPLOG}"/>
+                        <TextBlock Text="CMPLOG binary path (in container):" Margin="0,0,0,5"/>
+                        <TextBox Watermark="CMPLOG binary path (in container)" Text="{Binding Project.CmplogBinaryPath}" IsEnabled="{Binding Project.UseCMPLOG}"/>
                     </StackPanel>
 
                     <!-- Coverage build command -->
                     <StackPanel>
                         <TextBlock Text="Coverage build command:" FontWeight="Bold" Margin="0,10,0,5"/>
-                        <TextBox Text="{Binding Project.CoverageBuildCommand}" Margin="5,0"/>
+                        <TextBox Text="{Binding Project.CoverageBuildCommand}" Margin="5,0" IsEnabled="{Binding Project.GenerateCoverage}" />
+                        <TextBlock Text="Coverage binary path (in container):" Margin="0,0,0,5"/>
+                        <TextBox Watermark="Coverage binary path (in container)" Text="{Binding Project.CovBinaryPath}" IsEnabled="{Binding Project.GenerateCoverage}"/>
                     </StackPanel>
 
-                    <!-- Binary paths -->
-                    <TextBox Watermark="Fuzz binary path (in container)" Text="{Binding Project.FuzzBinaryPath}"/>
-                    <TextBox Watermark="Coverage binary path (in container)" Text="{Binding Project.CovBinaryPath}"/>
-
                     <!-- Target arguments -->
+                    <TextBlock Text="Target arguments:" FontWeight="Bold" Margin="0,0,0,5"/>
                     <TextBox Watermark="Target arguments (use @@ for input)" Text="{Binding Project.TargetArgs}"/>
                 </StackPanel>
             </Expander>
